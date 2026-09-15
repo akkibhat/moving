@@ -42,16 +42,27 @@
     margin: 0 0 4px;
   }
   .summary-bar {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     margin-top: 20px;
-    padding: 16px 20px;
+    padding: 4px;
     background: var(--accent-soft);
     border-radius: 10px;
     font-size: 0.92rem;
+    text-align: center;
   }
-  .summary-bar b { display:block; font-size:1.1rem; }
+  .summary-stat {
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    padding: 12px 10px;
+    border-radius: 8px;
+  }
+  .summary-stat:hover { background: rgba(0,0,0,0.04); }
+  .summary-stat.active { background: var(--accent); color: white; }
+  .summary-stat b { display: block; font-size: 1.3rem; }
   .filters {
     max-width: 1100px;
     margin: 0 auto;
@@ -73,14 +84,6 @@
     background: var(--accent);
     color: white;
     border-color: var(--accent);
-  }
-  .status-filters {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px 16px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
   }
   main {
     max-width: 1100px;
@@ -209,11 +212,10 @@
   <h1>Moving Sale — Networking, Gaming, Tools &amp; Tech</h1>
   <p>I've accumulated all this over the years — I'm moving to Queenstown in the next few weeks, so it all needs to go! Prices below are approximate — make me an offer if you want something. Pickup in Grey Lynn, Auckland.</p>
   <div class="summary-bar">
-    <div><b>27</b> items/lots listed</div>
+    <button class="summary-stat active" data-status="all" onclick="filterStatus(this)"><b>27</b> Items Listed</button><button class="summary-stat" data-status="Pending Sale" onclick="filterStatus(this)"><b>5</b> Items Pending Sale</button><button class="summary-stat" data-status="Sold" onclick="filterStatus(this)"><b>2</b> Items Sold</button>
   </div>
 </header>
 <div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (27)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (7)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (3)</button><button class="filter-btn" data-cat="Computer Accessories" onclick="filterCat(this)">Computer Accessories (3)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (2)</button></div>
-<div class="status-filters"><button class="filter-btn active" data-status="all" onclick="filterStatus(this)">All statuses (27)</button><button class="filter-btn" data-status="Available" onclick="filterStatus(this)">Available (20)</button><button class="filter-btn" data-status="Pending Sale" onclick="filterStatus(this)">Pending Sale (5)</button><button class="filter-btn" data-status="Sold" onclick="filterStatus(this)">Sold (2)</button></div>
 <main id="grid">
 
     <article class="card" id="grandstream-ht802" data-category="Networking" data-status="Available">
@@ -259,6 +261,111 @@
           <div class="price">$50 NZD</div>
         </div>
         <button class="offer-btn" onclick="openOfferModal('MikroTik RouterBOARD RBM33G')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-powerline-av1300" data-category="Networking" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/.netlify/images?url=/images/20260914_151754.jpg&w=700&fm=webp&q=75" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)</h3>
+        <ul class="specs"><li>2× units, 1300 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good cosmetic condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$229 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-powerline-av2000" data-category="Networking" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/.netlify/images?url=/images/20260914_152056.jpg&w=700&fm=webp&q=75" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)</h3>
+        <ul class="specs"><li>2× units, 2000 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, some light scuffs visible on one unit
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$249 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$130 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-archer-ax72" data-category="Networking" data-status="Available">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152108.jpg&w=700&fm=webp&q=75" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152130.jpg&w=700&fm=webp&q=75" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Archer AX72 — AX5400 WiFi 6 Router</h3>
+        <ul class="specs"><li>AX5400 dual-band WiFi 6, 6 external antennas</li><li>Gigabit WAN/LAN ports, USB 3.0</li><li>Power adapter included</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — works great, no issues
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$285 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$150 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Archer AX72 — AX5400 WiFi 6 Router')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="huawei-b818" data-category="Networking" data-status="Available">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152414.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152418.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152422.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>Huawei B818-263 — 4G LTE WiFi Router</h3>
+        <ul class="specs"><li>SIM-slot 4G/LTE Cat19 router, WiFi + 2× Gigabit LAN + TEL port</li><li>Works with any NZ SIM</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$180–215 NZD comparable listings</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Huawei B818-263 — 4G LTE WiFi Router')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="cisco-spa112" data-category="Networking" data-status="Available">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152839.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152843.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152847.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>Cisco SPA112 — 2-Port VoIP Phone Adapter</h3>
+        <ul class="specs"><li>2× FXS analog phone ports + WAN Ethernet port</li><li>Model SPA112</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$40–50 USD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$30 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Cisco SPA112 — 2-Port VoIP Phone Adapter')">Make an offer</button>
       </div>
     </article>
 
@@ -412,24 +519,6 @@
       </div>
     </article>
 
-    <article class="card" id="tplink-powerline-av1300" data-category="Networking" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/.netlify/images?url=/images/20260914_151754.jpg&w=700&fm=webp&q=75" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy"></div>
-      <div class="card-body">
-        <div class="eyebrow">Networking</div>
-        <h3>TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)</h3>
-        <ul class="specs"><li>2× units, 1300 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, good cosmetic condition
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$229 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$100 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)')">Make an offer</button>
-      </div>
-    </article>
-
     <article class="card" id="ubiquiti-uf-rj45-10g" data-category="Networking — transceivers" data-status="Available">
       <div class="gallery single"><img class="photo" src="/.netlify/images?url=/images/20260914_151904.jpg&w=700&fm=webp&q=75" alt="Ubiquiti UF-RJ45-10G Transceivers (×3)" loading="lazy"></div>
       <div class="card-body">
@@ -486,47 +575,6 @@
           <div class="price">$120 NZD <span class="per-note">(for charger + both batteries)</span></div>
         </div>
         <button class="offer-btn" onclick="openOfferModal('RAVPower Dual Charger + 2× Sony NP-FW50 Batteries')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="tplink-powerline-av2000" data-category="Networking" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/.netlify/images?url=/images/20260914_152056.jpg&w=700&fm=webp&q=75" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy"></div>
-      <div class="card-body">
-        <div class="eyebrow">Networking</div>
-        <h3>TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)</h3>
-        <ul class="specs"><li>2× units, 2000 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, some light scuffs visible on one unit
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$249 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$130 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="tplink-archer-ax72" data-category="Networking" data-status="Available">
-      <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152108.jpg&w=700&fm=webp&q=75" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152130.jpg&w=700&fm=webp&q=75" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div></div>
-      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
-      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
-      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
-    </div>
-      <div class="card-body">
-        <div class="eyebrow">Networking</div>
-        <h3>TP-Link Archer AX72 — AX5400 WiFi 6 Router</h3>
-        <ul class="specs"><li>AX5400 dual-band WiFi 6, 6 external antennas</li><li>Gigabit WAN/LAN ports, USB 3.0</li><li>Power adapter included</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used — works great, no issues
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$285 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$150 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('TP-Link Archer AX72 — AX5400 WiFi 6 Router')">Make an offer</button>
       </div>
     </article>
 
@@ -596,7 +644,29 @@
       </div>
     </article>
 
-    <article class="card" id="microsoft-surface-dock" data-category="Computer Accessories" data-status="Available">
+    <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment" data-status="Available">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152948.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152955.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_153005.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Home Entertainment</div>
+        <h3>HDMI Extender Kit — Sender + Receiver (LKV372A)</h3>
+        <ul class="specs"><li>HDMI over Cat5e/6 extender, sender + receiver pair</li><li>Model LKV372A</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$100 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$40 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('HDMI Extender Kit — Sender + Receiver (LKV372A)')">Make an offer</button>
+      </div>
+    </article>
+<article class="card" id="microsoft-surface-dock" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152236.jpg&w=700&fm=webp&q=75" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152243.jpg&w=700&fm=webp&q=75" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152249.jpg&w=700&fm=webp&q=75" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -666,29 +736,6 @@
       </div>
     </article>
 
-    <article class="card" id="huawei-b818" data-category="Networking" data-status="Available">
-      <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152414.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152418.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152422.jpg&w=700&fm=webp&q=75" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div></div>
-      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
-      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
-      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
-    </div>
-      <div class="card-body">
-        <div class="eyebrow">Networking</div>
-        <h3>Huawei B818-263 — 4G LTE WiFi Router</h3>
-        <ul class="specs"><li>SIM-slot 4G/LTE Cat19 router, WiFi + 2× Gigabit LAN + TEL port</li><li>Works with any NZ SIM</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$180–215 NZD comparable listings</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$50 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Huawei B818-263 — 4G LTE WiFi Router')">Make an offer</button>
-      </div>
-    </article>
-
     <article class="card pending" id="ozito-pxc-set" data-category="Tools" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
@@ -747,52 +794,7 @@
       </div>
     </article>
 
-    <article class="card" id="cisco-spa112" data-category="Networking" data-status="Available">
-      <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152839.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152843.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152847.jpg&w=700&fm=webp&q=75" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div></div>
-      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
-      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
-      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
-    </div>
-      <div class="card-body">
-        <div class="eyebrow">Networking</div>
-        <h3>Cisco SPA112 — 2-Port VoIP Phone Adapter</h3>
-        <ul class="specs"><li>2× FXS analog phone ports + WAN Ethernet port</li><li>Model SPA112</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$40–50 USD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$30 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Cisco SPA112 — 2-Port VoIP Phone Adapter')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment" data-status="Available">
-      <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152948.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_152955.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="/.netlify/images?url=/images/20260914_153005.jpg&w=700&fm=webp&q=75" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div></div>
-      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
-      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
-      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
-    </div>
-      <div class="card-body">
-        <div class="eyebrow">Home Entertainment</div>
-        <h3>HDMI Extender Kit — Sender + Receiver (LKV372A)</h3>
-        <ul class="specs"><li>HDMI over Cat5e/6 extender, sender + receiver pair</li><li>Model LKV372A</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$100 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$40 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('HDMI Extender Kit — Sender + Receiver (LKV372A)')">Make an offer</button>
-      </div>
-    </article>
-</main>
+    </main>
 <footer>
   <p>Prices are rough starting points based on NZ retail pricing for the new equivalent and typical used resale ratios — not a valuation, and open to offers. Auckland (Grey Lynn) pickup assumed unless you say otherwise.</p>
 </footer>
@@ -899,7 +901,7 @@ function filterCat(btn) {
   applyFilters();
 }
 function filterStatus(btn) {
-  document.querySelectorAll('.status-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.summary-stat').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   currentStatus = btn.dataset.status;
   applyFilters();
