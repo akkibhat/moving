@@ -386,10 +386,12 @@ function renderTotalRevenue(byItem, itemNames) {
 
   if (!soldCount) {
     el.innerHTML = '';
+    el.hidden = true;
     return;
   }
 
   el.innerHTML = `Total made so far: <b>$${total.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price</span>`;
+  el.hidden = currentTab !== 'offers';
 }
 
 function renderItemGroup(item, offersForItem) {
