@@ -60,6 +60,9 @@ const ITEM_LISTED_PRICES = {
   'Black & Decker Dustbuster 4.8V': '$20 NZD',
   '2-Tier Side Table': '$25 NZD',
   'Morris 1.8m Entertainment Unit — Oak': '$100 NZD',
+  'Feeltek Portable 9-in-2 USB-C Hub': '$35 NZD',
+  'Free Dongle Bundle': 'Free',
+  'Kogan SmarterHome™ LS16 Robot Vacuum + Auto-Empty Dock': '$150 NZD',
 };
 
 function listedPriceFor(item) {
