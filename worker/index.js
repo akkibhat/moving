@@ -68,7 +68,7 @@ const ITEM_LISTED_PRICES = {
   '2× Guitar Hero Guitars + Wireless Dongles': '$100 NZD',
   'Nikko Open-Face Helmet': '$40 NZD',
   'Squier by Fender Bullet Strat': '$150 NZD ($200 w/ cable)',
-  'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': '$90 NZD',
+  'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': '$100 NZD',
 };
 
 function listedPriceFor(item) {
