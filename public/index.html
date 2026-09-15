@@ -118,10 +118,12 @@
   .offer-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
   .gallery { position: relative; background: #efece5; aspect-ratio: 4/3; overflow: hidden; }
   .gallery img.photo { width: 100%; height: 100%; object-fit: cover; display:block; }
+  .gallery.contain img.photo { object-fit: contain; }
   .gallery.single img.photo { position: static; }
   .gallery.multi .slides { display: flex; height: 100%; transition: transform .3s ease; }
   .gallery.multi .slide { min-width: 100%; height: 100%; }
   .gallery.multi .slide img { width:100%; height:100%; object-fit:cover; }
+  .gallery.contain.multi .slide img { object-fit: contain; }
   .nav {
     position: absolute; top: 50%; transform: translateY(-50%);
     background: rgba(0,0,0,0.45); color: white; border: none;
@@ -1128,7 +1130,7 @@
     </article>
 
     <article class="card" id="squier-bullet-strat" data-category="Music" data-status="Available">
-      <div class="gallery multi" data-count="2">
+      <div class="gallery multi contain" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="/images/20260916_000534.webp" alt="Squier by Fender Bullet Strat" loading="lazy"></div><div class="slide"><img class="photo" src="/images/20260916_000537.webp" alt="Squier by Fender Bullet Strat" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
