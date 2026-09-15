@@ -101,6 +101,8 @@ const ITEM_STATUS = {
   'PS4 DualShock 4 Controllers + Charging Dock': 'Sold',
   'Free Dongle Bundle': 'Sold',
   'Kogan SmarterHome™ LS16 Robot Vacuum + Auto-Empty Dock': 'Pending Sale',
+  'Squier by Fender Bullet Strat': 'Pending Sale',
+  'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': 'Pending Sale',
 };
 
 function statusFor(item) {
