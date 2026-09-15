@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moving Sale — Networking, Gaming, Tools &amp; Tech</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --ink: #1c1b19;
+    --muted: #6b6660;
+    --card-bg: #ffffff;
+    --accent: #b5502c;
+    --accent-soft: #f2e2da;
+    --line: #e7e2d9;
+    --warn-bg: #fff4e0;
+    --warn-line: #e8c27a;
+    --ok-bg: #eef4ec;
+    --ok-line: #a9c9a0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    padding: 48px 24px 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  header h1 {
+    font-size: 2rem;
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 0 4px;
+  }
+  .summary-bar {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    font-size: 0.92rem;
+  }
+  .summary-bar b { display:block; font-size:1.1rem; }
+  .filters {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    border: 1px solid var(--line);
+    background: var(--card-bg);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card.hidden { display: none; }
+  .card.pending .card-body { opacity: 0.7; }
+  .card.pending .gallery { filter: grayscale(0.25); }
+  .status-badge {
+    position: absolute; top: 10px; left: 10px; z-index: 5;
+    background: var(--warn-bg); border: 1px solid var(--warn-line); color: #8a5a12;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .offer-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .gallery { position: relative; background: #efece5; aspect-ratio: 4/3; overflow: hidden; }
+  .gallery img.photo { width: 100%; height: 100%; object-fit: cover; display:block; }
+  .gallery.single img.photo { position: static; }
+  .gallery.multi .slides { display: flex; height: 100%; transition: transform .3s ease; }
+  .gallery.multi .slide { min-width: 100%; height: 100%; }
+  .gallery.multi .slide img { width:100%; height:100%; object-fit:cover; }
+  .nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.45); color: white; border: none;
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+  }
+  .nav.prev { left: 8px; }
+  .nav.next { right: 8px; }
+  .dots { position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.6); border: none; cursor: pointer; padding:0; }
+  .dot.active { background: white; }
+  .card-body { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 600; }
+  .card-body h3 { margin: 0; font-size: 1.08rem; line-height: 1.3; }
+  .specs { margin: 0; padding-left: 18px; font-size: 0.88rem; color: #45413c; }
+  .specs li { margin-bottom: 2px; }
+  .row { font-size: 0.85rem; color: var(--muted); }
+  .label { color: var(--ink); font-weight: 600; }
+  .condition-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .conf { font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
+  .conf-ok { background: var(--ok-bg); border-color: var(--ok-line); color: #3d5c37; }
+  .conf-warn { background: var(--warn-bg); border-color: var(--warn-line); color: #8a5a12; }
+  .price-block {
+    margin-top: 4px;
+    padding: 10px 12px;
+    background: #faf5f0;
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+  }
+  .price-label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+  .price { font-size: 1.15rem; font-weight: 700; color: var(--accent); }
+  .per-note { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+  .need-box {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .need-label { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: #8a5a12; margin-bottom: 4px; }
+  .need-box ul { margin: 0; padding-left: 18px; font-size: 0.85rem; }
+  .offer-btn {
+    margin-top: 6px;
+    align-self: flex-start;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .offer-btn:hover { opacity: 0.9; }
+  footer {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; color: var(--muted); font-size: 0.85rem;
+  }
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(28,27,25,0.55);
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 14px;
+    max-width: 420px;
+    width: 100%;
+    padding: 24px;
+  }
+  .modal h2 { margin: 0 0 4px; font-size: 1.2rem; }
+  .modal .modal-item { color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-bottom: 16px; }
+  .modal label { display: block; font-size: 0.82rem; font-weight: 600; margin: 12px 0 4px; }
+  .modal input, .modal textarea {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 7px;
+    font-family: inherit; font-size: 0.9rem;
+  }
+  .modal textarea { min-height: 80px; resize: vertical; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+  .modal-send { background: var(--accent); color: white; }
+  .modal-cancel { background: var(--line); color: var(--ink); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Moving Sale — Networking, Gaming, Tools &amp; Tech</h1>
+  <p>I've accumulated all this over the years — I'm moving to Queenstown in the next few weeks, so it all needs to go! Prices below are approximate — make me an offer if you want something. Pickup in Grey Lynn, Auckland.</p>
+  <div class="summary-bar">
+    <div><b>27</b> items/lots listed</div>
+  </div>
+</header>
+<div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (27)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (7)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (3)</button><button class="filter-btn" data-cat="Computer Accessories" onclick="filterCat(this)">Computer Accessories (3)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (2)</button></div>
+<main id="grid">
+
+    <article class="card" id="grandstream-ht802" data-category="Networking">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151402.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151408.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151414.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>Grandstream HT802 — 2-Port VoIP ATA</h3>
+        <ul class="specs"><li>2× FXS analog phone ports + 1× 10/100 Mbps Ethernet</li><li>Model HT802</li><li>Turns regular analog phones into VoIP/SIP extensions</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — tested working (powered on and confirmed Sept 2026), power adapter included, updated to latest firmware
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$90–97 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$30 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Grandstream HT802 — 2-Port VoIP ATA')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="mikrotik-routerboard" data-category="Networking">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151434.jpg" alt="MikroTik RouterBOARD RBM33G" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151447.jpg" alt="MikroTik RouterBOARD RBM33G" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>MikroTik RouterBOARD RBM33G</h3>
+        <ul class="specs"><li>3× Gigabit Ethernet ports, dual-core 880MHz CPU, 256MB DDR3 RAM</li><li>2× miniPCIe slots + M.2 + microSD</li><li>Comes with one 3G/LTE modem installed — handy as an internet backup/failover</li><li>DB9 serial console, PoE-in or DC jack (8–30V)</li><li>Power adapter included</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, working pull from homelab, updated to latest firmware
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~US$59 (~$95–100 NZD) new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('MikroTik RouterBOARD RBM33G')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="edimax-en9320sfp" data-category="Networking — 10G cards">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151513.jpg" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151519.jpg" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC</h3>
+        <ul class="specs"><li>2× SFP+ 10 Gigabit ports, PCIe, low-profile bracket</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — tested working before removal
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$120–150 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="qnap-qxg-10g2t" data-category="Networking — 10G cards">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151526.jpg" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151533.jpg" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card</h3>
+        <ul class="specs"><li>2× RJ45 copper ports, 5-speed (10G/5G/2.5G/1G/100M)</li><li>PCIe 3.0 x4 — fits QNAP NAS or a Windows PC/server</li><li>Sold as-is — QNAP-specific mounting bracket not included, standard PCIe bracket only</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, pulled from a system, sold as-is
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~US$179–359 (~$300–600 NZD) new depending on chipset variant</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="hpe-562sfp" data-category="Networking — 10G cards">
+      <div class="gallery single"><img class="photo" src="images/20260914_151547.jpg" alt="HPE Ethernet 10Gb 2-Port 562SFP+ Adapter" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>HPE Ethernet 10Gb 2-Port 562SFP+ Adapter</h3>
+        <ul class="specs"><li>2× SFP+ 10G ports, PCIe 3.0 x8, Intel X710 controller</li><li>P/N 790316-001 · SPS 727055-B21 family</li><li>Confirmed unused — sealed in original clamshell/anti-static packaging</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Unused — never installed
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$300+ NZD new / US$60–90 used on eBay</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('HPE Ethernet 10Gb 2-Port 562SFP+ Adapter')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="dell-h44490" data-category="Networking — 10G cards">
+      <div class="gallery single"><img class="photo" src="images/20260914_151553.jpg" alt="Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)</h3>
+        <ul class="specs"><li>2× SFP+ 10G ports, PCIe, low-profile + full-height brackets included</li><li>Dell OEM part H44490-020 (2020/2023 date codes visible)</li><li>Unused — sealed in original clamshell packaging, pulled from spares stock</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Unused
+        </div>
+        <div class="row"><span class="label">New price ref:</span> comparable Dell dual-port 10G SFP+ cards: $40–90 NZD used/new-old-stock</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="hp-526flr-sfp" data-category="Networking — 10G cards">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151601.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151609.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151612.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter</h3>
+        <ul class="specs"><li>2× SFP+ 10G ports, server-grade network adapter</li><li>P/N 632962-001 · Option kit 629136-001</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, pulled from a server
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$40–70 NZD used</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$40 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="hpe-560flr-sfp" data-category="Networking — 10G cards">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151625.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151629.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151630.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — 10G cards</div>
+        <h3>HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter</h3>
+        <ul class="specs"><li>2× SFP+ 10G ports, server-grade network adapter</li><li>SPS 668281-001 · Option kit 665243-B21</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, pulled from a server
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$50–90 NZD used</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="fs-10g-dac-cables" data-category="Networking — cables">
+      <div class="gallery single"><img class="photo" src="images/20260914_151733.jpg" alt="FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — cables</div>
+        <h3>FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5</h3>
+        <ul class="specs"><li>4× 0.5m (2ft) + 1× 2m 10G SFP+ passive Direct Attach Copper Twinax cables</li><li>P/N SFPP-PC005 (0.5m) / CABLTE1005</li><li>0.5m cables unused; the 2m cable has been plugged in once</li><li>Also happy to sell individually: $20 each for a 0.5m cable, $40 for the 2m</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> New/unused (0.5m), lightly used — plugged in once (2m)
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$30–40 NZD new (0.5m) / ~$50–60 NZD new (2m)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD <span class="per-note">(for all 5 cables together)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-powerline-av1300" data-category="Networking">
+      <div class="gallery single"><img class="photo" src="images/20260914_151754.jpg" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)</h3>
+        <ul class="specs"><li>2× units, 1300 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good cosmetic condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$229 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="ubiquiti-uf-rj45-10g" data-category="Networking — transceivers">
+      <div class="gallery single"><img class="photo" src="images/20260914_151904.jpg" alt="Ubiquiti UF-RJ45-10G Transceivers (×3)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking — transceivers</div>
+        <h3>Ubiquiti UF-RJ45-10G Transceivers (×3)</h3>
+        <ul class="specs"><li>10G SFP+ to RJ45 copper transceiver, 30m reach over Cat6a</li><li>Genuine Ubiquiti, boxed</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Looks lightly used / boxed
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~US$80–86 each new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$70 NZD <span class="per-note">(price is per unit)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Ubiquiti UF-RJ45-10G Transceivers (×3)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="pioneer-ddj-sr" data-category="DJ / Audio">
+      <div class="gallery single"><img class="photo" src="images/20260914_152015.jpg" alt="Pioneer DDJ-SR — Serato DJ Controller" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">DJ / Audio</div>
+        <h3>Pioneer DDJ-SR — Serato DJ Controller</h3>
+        <ul class="specs"><li>2-channel controller, built-in mixer, Serato DJ compatible</li><li>Large jog wheels, performance pads, FX section</li><li>Comes with USB-C cable</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Lightly used — only used for about a week before other projects took over. No known issues.
+        </div>
+        <div class="row"><span class="label">New price ref:</span> used units ~US$400–600 overseas</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$500 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Pioneer DDJ-SR — Serato DJ Controller')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="ravpower-sony-batteries" data-category="Photography">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152029.jpg" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152036.jpg" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Photography</div>
+        <h3>RAVPower Dual Charger + 2× Sony NP-FW50 Batteries</h3>
+        <ul class="specs"><li>RAVPower dual-channel charger (CH1/CH2)</li><li>2× genuine Sony NP-FW50 batteries (fits Sony a6xxx / a7 series)</li><li>Priced as: charger $20 + battery $50 each</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> Sony NP-FW50 ~$100 NZD each new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$120 NZD <span class="per-note">(for charger + both batteries)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('RAVPower Dual Charger + 2× Sony NP-FW50 Batteries')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-powerline-av2000" data-category="Networking">
+      <div class="gallery single"><img class="photo" src="images/20260914_152056.jpg" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)</h3>
+        <ul class="specs"><li>2× units, 2000 Mbps HomePlug AV2, AC pass-through socket on each</li><li>NZ/AU 3-pin sockets</li><li>Sold as a matched pair</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, some light scuffs visible on one unit
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$249 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$130 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="tplink-archer-ax72" data-category="Networking">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152108.jpg" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152130.jpg" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>TP-Link Archer AX72 — AX5400 WiFi 6 Router</h3>
+        <ul class="specs"><li>AX5400 dual-band WiFi 6, 6 external antennas</li><li>Gigabit WAN/LAN ports, USB 3.0</li><li>Power adapter included</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — works great, no issues
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$285 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$150 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('TP-Link Archer AX72 — AX5400 WiFi 6 Router')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="kenwood-dashcam" data-category="Car Electronics">
+      <div class="gallery single"><img class="photo" src="images/20260914_152144.jpg" alt="Kenwood Full HD Dash Cam" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Car Electronics</div>
+        <h3>Kenwood Full HD Dash Cam</h3>
+        <ul class="specs"><li>Full HD single-lens dash cam with windscreen mount</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Unused, never installed — sold as-is
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$100–200 NZD new depending on exact model</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Kenwood Full HD Dash Cam')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card pending" id="smartvu-a7070" data-category="Home Entertainment">
+      <div class="gallery multi" data-count="3">
+      <span class="status-badge">Pending sale</span>
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152156.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152201.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152204.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Home Entertainment</div>
+        <h3>SmartVU+ A7070 — Satellite/Freeview Receiver</h3>
+        <ul class="specs"><li>Satellite &amp; terrestrial Freeview receiver, Android TV based</li><li>HDMI, LAN, USB×2, TF card, AV, RF/LNB in</li><li>Streams Netflix, YouTube, TVNZ+, ThreeNow, Prime Video etc.</li><li>No physical remote — controllable from a phone via the Google TV app</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$99–129 NZD new/refurbished</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
+      </div>
+    </article>
+
+    <article class="card pending" id="xiaomi-mi-box" data-category="Home Entertainment">
+      <div class="gallery multi" data-count="2">
+      <span class="status-badge">Pending sale</span>
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152213.jpg" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152219.jpg" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Home Entertainment</div>
+        <h3>Xiaomi Mi Box — Android TV Streaming Box</h3>
+        <ul class="specs"><li>Android TV streaming box, model MDZ-22-AB</li><li>HDMI, USB, supports 4K</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$100–120 NZD new (newer models)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$25 NZD</div>
+        </div>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
+      </div>
+    </article>
+
+    <article class="card" id="microsoft-surface-dock" data-category="Computer Accessories">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152236.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152243.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152249.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Computer Accessories</div>
+        <h3>Microsoft Surface Dock (1st gen, 1661) + Power Supply</h3>
+        <ul class="specs"><li>Ethernet, audio, 2× Mini DisplayPort, 4× USB, Surface Connect cable</li><li>Includes original power supply</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> US$150–200 new equivalent (discontinued)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$60 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Microsoft Surface Dock (1st gen, 1661) + Power Supply')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="logitech-mx-master-3" data-category="Computer Accessories">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152325.jpg" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152331.jpg" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Computer Accessories</div>
+        <h3>Logitech MX Master 3 Wireless Mouse</h3>
+        <ul class="specs"><li>8-button wireless mouse, Bluetooth + USB receiver</li><li>MagSpeed scroll wheel</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$149 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Logitech MX Master 3 Wireless Mouse')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="wacom-intuos-ctl4100wl" data-category="Computer Accessories">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152358.jpg" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152402.jpg" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Computer Accessories</div>
+        <h3>Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet</h3>
+        <ul class="specs"><li>Small pen tablet, Bluetooth, 4096 pressure levels, battery-free pen</li><li>Pen not included — couldn&#x27;t locate it</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, some surface wear, sold without pen
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$150–200 NZD new (with pen)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$30 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="huawei-b818" data-category="Networking">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152414.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152418.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152422.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>Huawei B818-263 — 4G LTE WiFi Router</h3>
+        <ul class="specs"><li>SIM-slot 4G/LTE Cat19 router, WiFi + 2× Gigabit LAN + TEL port</li><li>Works with any NZ SIM</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$180–215 NZD comparable listings</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Huawei B818-263 — 4G LTE WiFi Router')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card pending" id="ozito-pxc-set" data-category="Tools">
+      <div class="gallery single">
+      <span class="status-badge">Pending sale</span>
+      <img class="photo" src="images/20260914_152702.jpg" alt="Ozito PXC 18V Drill + LED Worklight + Battery + Charger" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Tools</div>
+        <h3>Ozito PXC 18V Drill + LED Worklight + Battery + Charger</h3>
+        <ul class="specs"><li>18V cordless drill/driver</li><li>18V LED worklight (shares same battery platform)</li><li>1.5Ah battery + charger included</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, working
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$150–180 NZD new for equivalent pieces bought separately</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$60 NZD</div>
+        </div>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
+      </div>
+    </article>
+
+    <article class="card" id="ps4-controllers-dock" data-category="Gaming">
+      <div class="gallery single"><img class="photo" src="images/20260914_152828.jpg" alt="PS4 DualShock 4 Controllers + Charging Dock" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Gaming</div>
+        <h3>PS4 DualShock 4 Controllers + Charging Dock</h3>
+        <ul class="specs"><li>2× DualShock 4 wireless controllers (red + black)</li><li>Dual charging dock — thrown in free if you buy both controllers</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$80–100 NZD new per controller</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$40 NZD <span class="per-note">(each — buy both and get the charging dock free)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('PS4 DualShock 4 Controllers + Charging Dock')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="ps3-slim" data-category="Gaming">
+      <div class="gallery single"><img class="photo" src="images/20260914_152921.jpg" alt="PlayStation 3 (Slim)" loading="lazy"></div>
+      <div class="card-body">
+        <div class="eyebrow">Gaming</div>
+        <h3>PlayStation 3 (Slim)</h3>
+        <ul class="specs"><li>PS3 Slim console</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> discontinued console — used market only</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('PlayStation 3 (Slim)')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="cisco-spa112" data-category="Networking">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152839.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152843.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152847.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Networking</div>
+        <h3>Cisco SPA112 — 2-Port VoIP Phone Adapter</h3>
+        <ul class="specs"><li>2× FXS analog phone ports + WAN Ethernet port</li><li>Model SPA112</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$40–50 USD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$30 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Cisco SPA112 — 2-Port VoIP Phone Adapter')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment">
+      <div class="gallery multi" data-count="3">
+      <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152948.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152955.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_153005.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Home Entertainment</div>
+        <h3>HDMI Extender Kit — Sender + Receiver (LKV372A)</h3>
+        <ul class="specs"><li>HDMI over Cat5e/6 extender, sender + receiver pair</li><li>Model LKV372A</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$100 NZD new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$40 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('HDMI Extender Kit — Sender + Receiver (LKV372A)')">Make an offer</button>
+      </div>
+    </article>
+</main>
+<footer>
+  <p>Prices are rough starting points based on NZ retail pricing for the new equivalent and typical used resale ratios — not a valuation, and open to offers. Auckland (Grey Lynn) pickup assumed unless you say otherwise.</p>
+</footer>
+
+<div class="modal-backdrop" id="offerBackdrop" onclick="if(event.target===this) closeOfferModal()">
+  <div class="modal">
+    <div id="offerFormWrap">
+      <h2>Make an offer</h2>
+      <div class="modal-item" id="offerItemName"></div>
+      <form id='offerForm' method='POST' name='offer' onsubmit='submitOfferForm(event)'>
+        <input type="hidden" name="form-name" value="offer">
+        <input type="hidden" name="item" id="offerItemField">
+        <p style="display:none"><label>Leave this blank: <input name="bot-field"></label></p>
+        <label for="offerName">Your name</label>
+        <input id="offerName" name="name" type="text" required>
+        <label for="offerEmail">Your email</label>
+        <input id="offerEmail" name="email" type="email" required>
+        <label for="offerAmount">Offer (NZD, optional)</label>
+        <input id="offerAmount" name="offer" type="text" placeholder="e.g. $40">
+        <label for="offerMessage">Message</label>
+        <textarea id="offerMessage" name="message"></textarea>
+        <div class="modal-actions">
+          <button type="button" class="modal-cancel" onclick="closeOfferModal()">Cancel</button>
+          <button type="submit" class="modal-send">Send</button>
+        </div>
+      </form>
+    </div>
+    <div id="offerSuccessWrap" style="display:none">
+      <h2>Thanks!</h2>
+      <p>Your message has been sent — I'll get back to you soon.</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-send" onclick="closeOfferModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CONTACT_EMAIL = "akki@pi.co.nz"; // used only as a fallback if the form can't reach Netlify (e.g. testing locally)
+let currentOfferItem = "";
+
+function openOfferModal(itemTitle) {
+  currentOfferItem = itemTitle;
+  document.getElementById('offerItemName').textContent = itemTitle;
+  document.getElementById('offerItemField').value = itemTitle;
+  document.getElementById('offerMessage').value = `Hi, I'm interested in the ${itemTitle}.`;
+  document.getElementById('offerFormWrap').style.display = '';
+  document.getElementById('offerSuccessWrap').style.display = 'none';
+  document.getElementById('offerBackdrop').classList.add('open');
+}
+function closeOfferModal() {
+  document.getElementById('offerBackdrop').classList.remove('open');
+}
+function encodeFormData(data) {
+  return Object.keys(data).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k])).join('&');
+}
+function submitOfferForm(e) {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const payload = {};
+  formData.forEach((v, k) => payload[k] = v);
+
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: encodeFormData(payload),
+  })
+    .then(() => {
+      document.getElementById('offerFormWrap').style.display = 'none';
+      document.getElementById('offerSuccessWrap').style.display = '';
+      form.reset();
+    })
+    .catch(() => {
+      // Fallback for when this isn't deployed on Netlify (e.g. opened as a local file) — opens an email instead.
+      const subject = `Offer: ${currentOfferItem}`;
+      const body = `From: ${payload.name} (${payload.email})\nOffer: ${payload.offer || 'n/a'}\n\n${payload.message}`;
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      closeOfferModal();
+    });
+}
+</script>
+
+<script>
+function filterCat(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cat = btn.dataset.cat;
+  document.querySelectorAll('.card').forEach(card => {
+    card.classList.toggle('hidden', cat !== 'all' && card.dataset.category !== cat);
+  });
+}
+function shiftSlide(btn, dir) {
+  const gallery = btn.closest('.gallery');
+  const slides = gallery.querySelector('.slides');
+  const count = parseInt(gallery.dataset.count, 10);
+  let i = parseInt(gallery.dataset.index || '0', 10);
+  i = (i + dir + count) % count;
+  gallery.dataset.index = i;
+  slides.style.transform = `translateX(${-i * 100}%)`;
+  gallery.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+function setSlide(dot) {
+  const gallery = dot.closest('.gallery');
+  const slides = gallery.querySelector('.slides');
+  const i = parseInt(dot.dataset.i, 10);
+  gallery.dataset.index = i;
+  slides.style.transform = `translateX(${-i * 100}%)`;
+  gallery.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+}
+document.querySelectorAll('.gallery.multi').forEach(g => {
+  g.querySelectorAll('.dot')[0]?.classList.add('active');
+});
+</script>
+</body>
+</html>
