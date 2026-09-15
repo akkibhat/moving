@@ -117,26 +117,36 @@
   }
   .offer-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
   .gallery { position: relative; background: #efece5; aspect-ratio: 4/3; overflow: hidden; }
-  .gallery img.photo { width: 100%; height: 100%; object-fit: cover; display:block; cursor: zoom-in; }
+  .gallery img.photo { width: 100%; height: 100%; object-fit: cover; display:block; cursor: pointer; }
   .gallery.contain img.photo { object-fit: contain; }
-  .lightbox-backdrop {
+  .detail-backdrop {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(28,27,25,0.7);
     align-items: center; justify-content: center;
     z-index: 200;
-    padding: 24px;
-    cursor: zoom-out;
+    padding: 20px;
   }
-  .lightbox-backdrop.open { display: flex; }
-  .lightbox-img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
-  .lightbox-close {
-    position: absolute; top: 16px; right: 20px;
-    background: rgba(255,255,255,0.15); color: white; border: none;
-    width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; line-height: 1;
+  .detail-backdrop.open { display: flex; }
+  .detail-modal {
+    background: var(--card-bg);
+    border-radius: 14px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .detail-modal .gallery { border-radius: 14px 14px 0 0; cursor: default; }
+  .detail-modal .gallery img.photo { cursor: default; }
+  .detail-modal .card-body { padding: 20px; }
+  .detail-close {
+    position: absolute; top: 12px; right: 12px; z-index: 10;
+    background: rgba(28,27,25,0.55); color: white; border: none;
+    width: 34px; height: 34px; border-radius: 50%; font-size: 1.3rem; line-height: 1;
     cursor: pointer;
   }
-  .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+  .detail-close:hover { background: rgba(28,27,25,0.75); }
   .gallery.single img.photo { position: static; }
   .gallery.multi .slides { display: flex; height: 100%; transition: transform .3s ease; }
   .gallery.multi .slide { min-width: 100%; height: 100%; }
@@ -241,7 +251,7 @@
 
     <article class="card" id="grandstream-ht802" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151402.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151408.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151414.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151402.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151408.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151414.webp" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -264,7 +274,7 @@
 
     <article class="card" id="mikrotik-routerboard" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151434.webp" alt="MikroTik RouterBOARD RBM33G" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151447.webp" alt="MikroTik RouterBOARD RBM33G" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151434.webp" alt="MikroTik RouterBOARD RBM33G" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151447.webp" alt="MikroTik RouterBOARD RBM33G" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -286,7 +296,7 @@
     </article>
 
     <article class="card" id="tplink-powerline-av1300" data-category="Networking" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_151754.webp" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_151754.webp" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking</div>
         <h3>TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)</h3>
@@ -304,7 +314,7 @@
     </article>
 
     <article class="card" id="tplink-powerline-av2000" data-category="Networking" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_152056.webp" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_152056.webp" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking</div>
         <h3>TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)</h3>
@@ -323,7 +333,7 @@
 
     <article class="card" id="tplink-archer-ax72" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152108.webp" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152130.webp" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152108.webp" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152130.webp" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -346,7 +356,7 @@
 
     <article class="card" id="huawei-b818" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152414.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152418.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152422.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152414.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152418.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152422.webp" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -369,7 +379,7 @@
 
     <article class="card" id="cisco-spa112" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152839.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152843.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152847.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152839.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152843.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152847.webp" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -392,7 +402,7 @@
 
     <article class="card" id="netgear-orbi-rbr750" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180422.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180431.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180502.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180422.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180431.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180502.webp" alt="Netgear Orbi RBR750 Router + 2× RBS750 Satellites" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -415,7 +425,7 @@
 
     <article class="card" id="edimax-en9320sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151513.webp" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151519.webp" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151513.webp" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151519.webp" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -438,7 +448,7 @@
 
     <article class="card" id="qnap-qxg-10g2t" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151526.webp" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151533.webp" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151526.webp" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151533.webp" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -460,7 +470,7 @@
     </article>
 
     <article class="card" id="hpe-562sfp" data-category="Networking — 10G cards" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_151547.webp" alt="HPE Ethernet 10Gb 2-Port 562SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_151547.webp" alt="HPE Ethernet 10Gb 2-Port 562SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — 10G cards</div>
         <h3>HPE Ethernet 10Gb 2-Port 562SFP+ Adapter</h3>
@@ -480,7 +490,7 @@
     <article class="card pending" id="dell-h44490" data-category="Networking — 10G cards" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
-      <img class="photo" src="/images/20260914_151553.webp" alt="Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)" loading="lazy" onclick="openLightbox(this)"></div>
+      <img class="photo" src="/images/20260914_151553.webp" alt="Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — 10G cards</div>
         <h3>Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)</h3>
@@ -499,7 +509,7 @@
 
     <article class="card" id="hp-526flr-sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151601.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151609.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151612.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151601.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151609.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151612.webp" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -522,7 +532,7 @@
 
     <article class="card" id="hpe-560flr-sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151625.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151629.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151630.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_151625.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151629.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_151630.webp" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -546,7 +556,7 @@
     <article class="card pending" id="fs-10g-dac-cables" data-category="Networking — cables" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
-      <img class="photo" src="/images/20260914_151733.webp" alt="FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5" loading="lazy" onclick="openLightbox(this)"></div>
+      <img class="photo" src="/images/20260914_151733.webp" alt="FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — cables</div>
         <h3>FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5</h3>
@@ -564,7 +574,7 @@
     </article>
 
     <article class="card" id="ubiquiti-uf-rj45-10g" data-category="Networking — transceivers" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_151904.webp" alt="Ubiquiti UF-RJ45-10G Transceivers (×3)" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_151904.webp" alt="Ubiquiti UF-RJ45-10G Transceivers (×3)" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — transceivers</div>
         <h3>Ubiquiti UF-RJ45-10G Transceivers (×3)</h3>
@@ -582,7 +592,7 @@
     </article>
 
     <article class="card" id="pioneer-ddj-sr" data-category="DJ / Audio" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_152015.webp" alt="Pioneer DDJ-SR — Serato DJ Controller" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_152015.webp" alt="Pioneer DDJ-SR — Serato DJ Controller" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">DJ / Audio</div>
         <h3>Pioneer DDJ-SR — Serato DJ Controller</h3>
@@ -601,7 +611,7 @@
 
     <article class="card" id="ravpower-sony-batteries" data-category="Photography" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152029.webp" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152036.webp" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152029.webp" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152036.webp" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -623,7 +633,7 @@
     </article>
 
     <article class="card" id="kenwood-dashcam" data-category="Car Electronics" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_152144.webp" alt="Kenwood Full HD Dash Cam" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_152144.webp" alt="Kenwood Full HD Dash Cam" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Car Electronics</div>
         <h3>Kenwood Full HD Dash Cam</h3>
@@ -643,7 +653,7 @@
     <article class="card sold" id="smartvu-a7070" data-category="Home Entertainment" data-status="Sold">
       <div class="gallery multi" data-count="3">
       <span class="status-badge sold-badge">Sold</span>
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152156.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152201.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152204.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152156.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152201.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152204.webp" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -667,7 +677,7 @@
     <article class="card sold" id="xiaomi-mi-box" data-category="Home Entertainment" data-status="Sold">
       <div class="gallery multi" data-count="2">
       <span class="status-badge sold-badge">Sold</span>
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152213.webp" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152219.webp" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152213.webp" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152219.webp" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -690,7 +700,7 @@
 
     <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152948.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152955.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_153005.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152948.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152955.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_153005.webp" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -712,7 +722,7 @@
     </article>
 
     <article class="card" id="tcl-55c635" data-category="Home Entertainment" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_173228.webp" alt="TCL 55C635 4K QLED Google TV" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_173228.webp" alt="TCL 55C635 4K QLED Google TV" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Home Entertainment</div>
         <h3>TCL 55C635 4K QLED Google TV</h3>
@@ -731,7 +741,7 @@
 
     <article class="card" id="sony-ht-rt40" data-category="Home Entertainment" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180117.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180120.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180126.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180117.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180120.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180126.webp" alt="Sony HT-RT40 5.1ch Soundbar System" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -754,7 +764,7 @@
 
     <article class="card" id="nvidia-shield-tv" data-category="Home Entertainment" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180827.webp" alt="Nvidia Shield TV + Remote" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180834.webp" alt="Nvidia Shield TV + Remote" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_180827.webp" alt="Nvidia Shield TV + Remote" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_180834.webp" alt="Nvidia Shield TV + Remote" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -777,7 +787,7 @@
 
     <article class="card" id="sony-bravia-32ex400" data-category="Home Entertainment" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_224649.webp" alt="Sony Bravia KDL-32EX400 32&quot; LCD TV" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_224714.webp" alt="Sony Bravia KDL-32EX400 32&quot; LCD TV" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_224649.webp" alt="Sony Bravia KDL-32EX400 32&quot; LCD TV" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_224714.webp" alt="Sony Bravia KDL-32EX400 32&quot; LCD TV" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -799,7 +809,7 @@
     </article>
 <article class="card" id="microsoft-surface-dock" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152236.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152243.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152249.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152236.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152243.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152249.webp" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -823,7 +833,7 @@
     <article class="card pending" id="logitech-mx-master-3" data-category="Computer Accessories" data-status="Pending Sale">
       <div class="gallery multi" data-count="2">
       <span class="status-badge">Pending sale</span>
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152325.webp" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152331.webp" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152325.webp" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152331.webp" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -846,7 +856,7 @@
 
     <article class="card" id="wacom-intuos-ctl4100wl" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152358.webp" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152402.webp" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260914_152358.webp" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260914_152402.webp" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -869,7 +879,7 @@
 
     <article class="card" id="feeltek-usb-c-hub" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="3">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184535.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184558.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184606.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184535.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184558.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184606.webp" alt="Feeltek Portable 9-in-2 USB-C Hub" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button><button class="dot" data-i="2" onclick="setSlide(this)"></button></div>
@@ -892,7 +902,7 @@
 
     <article class="card" id="free-dongle-bundle" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184639.webp" alt="Free Dongle Bundle" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184650.webp" alt="Free Dongle Bundle" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184639.webp" alt="Free Dongle Bundle" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184650.webp" alt="Free Dongle Bundle" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -916,7 +926,7 @@
     <article class="card pending" id="ozito-pxc-set" data-category="Tools" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
-      <img class="photo" src="/images/20260914_152702.webp" alt="Ozito PXC 18V Drill + LED Worklight + Battery + Charger" loading="lazy" onclick="openLightbox(this)"></div>
+      <img class="photo" src="/images/20260914_152702.webp" alt="Ozito PXC 18V Drill + LED Worklight + Battery + Charger" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Tools</div>
         <h3>Ozito PXC 18V Drill + LED Worklight + Battery + Charger</h3>
@@ -936,7 +946,7 @@
     <article class="card pending" id="ps4-controllers-dock" data-category="Gaming" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
-      <img class="photo" src="/images/20260914_152828.webp" alt="PS4 DualShock 4 Controllers + Charging Dock" loading="lazy" onclick="openLightbox(this)"></div>
+      <img class="photo" src="/images/20260914_152828.webp" alt="PS4 DualShock 4 Controllers + Charging Dock" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Gaming</div>
         <h3>PS4 DualShock 4 Controllers + Charging Dock</h3>
@@ -954,7 +964,7 @@
     </article>
 
     <article class="card" id="ps3-slim" data-category="Gaming" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260914_152921.webp" alt="PlayStation 3 (Slim)" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260914_152921.webp" alt="PlayStation 3 (Slim)" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Gaming</div>
         <h3>PlayStation 3 (Slim)</h3>
@@ -972,7 +982,7 @@
     </article>
 
     <article class="card" id="singstar-mics" data-category="Gaming" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260916_000130.webp" alt="SingStar Wireless Microphones + Dongle" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260916_000130.webp" alt="SingStar Wireless Microphones + Dongle" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Gaming</div>
         <h3>SingStar Wireless Microphones + Dongle</h3>
@@ -991,7 +1001,7 @@
 
     <article class="card" id="guitar-hero-guitars" data-category="Gaming" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260916_000512.webp" alt="2× Guitar Hero Guitars + Wireless Dongles" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260916_000548.webp" alt="2× Guitar Hero Guitars + Wireless Dongles" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260916_000512.webp" alt="2× Guitar Hero Guitars + Wireless Dongles" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260916_000548.webp" alt="2× Guitar Hero Guitars + Wireless Dongles" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -1013,7 +1023,7 @@
     </article>
 
     <article class="card" id="instant-pot-duo-80" data-category="Kitchen" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_173310.webp" alt="Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_173310.webp" alt="Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Kitchen</div>
         <h3>Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker</h3>
@@ -1031,7 +1041,7 @@
     </article>
 
     <article class="card" id="harry-potter-wands" data-category="Collectibles" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_173239.webp" alt="Assorted Harry Potter Wands + Owl Holder" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_173239.webp" alt="Assorted Harry Potter Wands + Owl Holder" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Collectibles</div>
         <h3>Assorted Harry Potter Wands + Owl Holder</h3>
@@ -1049,7 +1059,7 @@
     </article>
 
     <article class="card" id="black-decker-dustbuster" data-category="Home" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_174737.webp" alt="Black &amp; Decker Dustbuster 4.8V" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_174737.webp" alt="Black &amp; Decker Dustbuster 4.8V" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Home</div>
         <h3>Black &amp; Decker Dustbuster 4.8V</h3>
@@ -1068,7 +1078,7 @@
 
     <article class="card" id="kogan-ls16-robot-vacuum" data-category="Home" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184954.webp" alt="Kogan SmarterHome LS16 Robot Vacuum + Auto-Empty Dock" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184956.webp" alt="Kogan SmarterHome LS16 Robot Vacuum + Auto-Empty Dock" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_184954.webp" alt="Kogan SmarterHome LS16 Robot Vacuum + Auto-Empty Dock" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_184956.webp" alt="Kogan SmarterHome LS16 Robot Vacuum + Auto-Empty Dock" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -1090,7 +1100,7 @@
     </article>
 
     <article class="card" id="side-table-2tier" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_175155.webp" alt="2-Tier Side Table" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_175155.webp" alt="2-Tier Side Table" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Furniture</div>
         <h3>2-Tier Side Table</h3>
@@ -1109,7 +1119,7 @@
 
     <article class="card" id="morris-entertainment-unit" data-category="Furniture" data-status="Available">
       <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_181553.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260915_181558.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_181553.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_181558.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -1131,7 +1141,7 @@
     </article>
 
     <article class="card" id="nikko-helmet" data-category="Other" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_224720.webp" alt="Nikko Open-Face Helmet" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_224720.webp" alt="Nikko Open-Face Helmet" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Other</div>
         <h3>Nikko Open-Face Helmet</h3>
@@ -1150,7 +1160,7 @@
 
     <article class="card" id="squier-bullet-strat" data-category="Music" data-status="Available">
       <div class="gallery multi contain" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260916_000534.webp" alt="Squier by Fender Bullet Strat" loading="lazy" onclick="openLightbox(this)"></div><div class="slide"><img class="photo" src="/images/20260916_000537.webp" alt="Squier by Fender Bullet Strat" loading="lazy" onclick="openLightbox(this)"></div></div>
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260916_000534.webp" alt="Squier by Fender Bullet Strat" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260916_000537.webp" alt="Squier by Fender Bullet Strat" loading="lazy" onclick="openDetailModal(this)"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
       <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
@@ -1172,7 +1182,7 @@
     </article>
 
     <article class="card" id="logitech-harmony-hub" data-category="Home Entertainment" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_235809.webp" alt="Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters" loading="lazy" onclick="openLightbox(this)"></div>
+      <div class="gallery single"><img class="photo" src="/images/20260915_235809.webp" alt="Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
         <div class="eyebrow">Home Entertainment</div>
         <h3>Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters</h3>
@@ -1194,9 +1204,11 @@
   <p>Prices are rough starting points based on NZ retail pricing for the new equivalent and typical used resale ratios — not a valuation, and open to offers. Auckland (Grey Lynn) pickup assumed unless you say otherwise.</p>
 </footer>
 
-<div class="lightbox-backdrop" id="lightboxBackdrop" onclick="closeLightbox()">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
-  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+<div class="detail-backdrop" id="detailBackdrop" onclick="if(event.target===this) closeDetailModal()">
+  <div class="detail-modal">
+    <button class="detail-close" onclick="closeDetailModal()" aria-label="Close">&times;</button>
+    <div id="detailContent"></div>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="offerBackdrop" onclick="if(event.target===this) closeOfferModal()">
@@ -1236,6 +1248,7 @@ const CONTACT_EMAIL = "akki@pi.co.nz"; // used only as a fallback if the /api/su
 let currentOfferItem = "";
 
 function openOfferModal(itemTitle) {
+  closeDetailModal(); // avoid stacking behind an open item-detail modal
   currentOfferItem = itemTitle;
   document.getElementById('offerItemName').textContent = itemTitle;
   document.getElementById('offerItemField').value = itemTitle;
@@ -1247,16 +1260,25 @@ function openOfferModal(itemTitle) {
 function closeOfferModal() {
   document.getElementById('offerBackdrop').classList.remove('open');
 }
-function openLightbox(img) {
-  document.getElementById('lightboxImg').src = img.src;
-  document.getElementById('lightboxImg').alt = img.alt;
-  document.getElementById('lightboxBackdrop').classList.add('open');
+function openDetailModal(img) {
+  const card = img.closest('.card');
+  const galleryClone = card.querySelector('.gallery').cloneNode(true);
+  const bodyClone = card.querySelector('.card-body').cloneNode(true);
+  // Photos inside the modal shouldn't re-trigger the modal on click.
+  galleryClone.querySelectorAll('img.photo').forEach((im) => im.removeAttribute('onclick'));
+
+  const content = document.getElementById('detailContent');
+  content.innerHTML = '';
+  content.appendChild(galleryClone);
+  content.appendChild(bodyClone);
+
+  document.getElementById('detailBackdrop').classList.add('open');
 }
-function closeLightbox() {
-  document.getElementById('lightboxBackdrop').classList.remove('open');
+function closeDetailModal() {
+  document.getElementById('detailBackdrop').classList.remove('open');
 }
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'Escape') closeDetailModal();
 });
 function submitOfferForm(e) {
   e.preventDefault();
