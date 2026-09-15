@@ -52,8 +52,8 @@ const ITEM_LISTED_PRICES = {
   'PS4 DualShock 4 Controllers + Charging Dock': '$40 NZD',
   'PlayStation 3 (Slim)': '$100 NZD',
   'TCL 55C635 4K QLED Google TV': '$450 NZD',
-  'Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker': '$80 NZD',
-  'Assorted Harry Potter Wands + Owl Holder': '$40 NZD',
+  'Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker': '$100 NZD',
+  'Assorted Harry Potter Wands + Owl Holder': '$20 NZD',
 };
 
 function listedPriceFor(item) {
