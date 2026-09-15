@@ -63,6 +63,11 @@ const ITEM_LISTED_PRICES = {
   'Feeltek Portable 9-in-2 USB-C Hub': '$35 NZD',
   'Free Dongle Bundle': 'Free',
   'Kogan SmarterHome™ LS16 Robot Vacuum + Auto-Empty Dock': '$150 NZD',
+  'Sony Bravia KDL-32EX400 32" LCD TV': 'Free',
+  'SingStar Wireless Microphones + Dongle': '$60 NZD',
+  '2× Guitar Hero Guitars + Wireless Dongles': '$100 NZD',
+  'Nikko Open-Face Helmet': '$40 NZD',
+  'Squier by Fender Bullet Strat': '$150 NZD ($200 w/ cable)',
 };
 
 function listedPriceFor(item) {
