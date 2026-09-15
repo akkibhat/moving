@@ -72,6 +72,12 @@
   }
   .item-count { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
   .listed-price { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .status-section-heading {
+    font-size: 1.1rem;
+    margin: 28px 0 12px;
+    color: var(--accent);
+  }
+  .status-section-heading:first-child { margin-top: 0; }
   .offer-row {
     padding: 12px 16px;
     border-top: 1px solid var(--line);
@@ -79,6 +85,22 @@
     flex-wrap: wrap;
     gap: 4px 16px;
     align-items: baseline;
+  }
+  .offer-row.winner { background: var(--ok-bg, #eef4ec); }
+  .winner-badge {
+    flex-basis: 100%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #3d5c37;
+  }
+  .winner-note {
+    flex-basis: 100%;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #3d5c37;
+    margin-top: 2px;
   }
   .offer-row .name { font-weight: 600; }
   .offer-row .amount { color: var(--accent); font-weight: 700; }
@@ -103,9 +125,11 @@
 <div class="gate" id="gate">
   <h1 style="font-size:1.2rem;">Private — offers log</h1>
   <p class="sub" style="margin-bottom:0;">Enter the password to view.</p>
-  <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
-  <div class="error" id="gateError"></div>
-  <button onclick="unlock()">Unlock</button>
+  <form onsubmit="event.preventDefault(); unlock();">
+    <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+    <div class="error" id="gateError"></div>
+    <button type="submit">Unlock</button>
+  </form>
 </div>
 
 <div class="wrap" id="content" hidden>
@@ -151,6 +175,9 @@ async function loadOffers() {
   renderGroups(offers);
 }
 
+// Sections shown in this order; each only renders if it has items.
+const STATUS_SECTIONS = ['Pending Sale', 'Sold', 'Available'];
+
 function renderGroups(offers) {
   const container = document.getElementById('groups');
   container.innerHTML = '';
@@ -166,41 +193,58 @@ function renderGroups(offers) {
     byItem[o.item].push(o);
   });
 
-  // Order item groups by their most recent offer, newest first.
-  const itemNames = Object.keys(byItem).sort((a, b) => {
-    const da = new Date(byItem[a][0].date || 0).getTime();
-    const db = new Date(byItem[b][0].date || 0).getTime();
-    return db - da;
-  });
+  const itemNames = Object.keys(byItem);
 
-  itemNames.forEach((item) => {
-    const group = document.createElement('div');
-    group.className = 'item-group';
+  // Group items by their current status (Pending Sale / Sold / Available)
+  // so the log reads as "what needs action" vs "already done" at a glance,
+  // while every individual offer for an item still stays together underneath.
+  STATUS_SECTIONS.forEach((status) => {
+    const namesInSection = itemNames
+      .filter((item) => (byItem[item][0].itemStatus || 'Available') === status)
+      .sort((a, b) => new Date(byItem[b][0].date || 0) - new Date(byItem[a][0].date || 0));
 
-    const header = document.createElement('div');
-    header.className = 'item-header';
-    const listedPrice = byItem[item][0].listedPrice;
-    header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span class="item-count">${byItem[item].length} offer${byItem[item].length === 1 ? '' : 's'}</span>`;
-    group.appendChild(header);
+    if (!namesInSection.length) return;
 
-    byItem[item].forEach((o) => {
-      const row = document.createElement('div');
-      row.className = 'offer-row';
-      const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
-      const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
-      row.innerHTML = `
-        <span class="name">${escapeHtml(o.name || '(no name)')}</span>
-        ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
-        ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}</span>` : ''}
-        <span class="${badgeClass}">${escapeHtml(o.source)}</span>
-        <span class="meta">${dateStr}</span>
-        ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
-      `;
-      group.appendChild(row);
+    const sectionHeading = document.createElement('h2');
+    sectionHeading.className = 'status-section-heading';
+    sectionHeading.textContent = status;
+    container.appendChild(sectionHeading);
+
+    namesInSection.forEach((item) => {
+      container.appendChild(renderItemGroup(item, byItem[item]));
     });
-
-    container.appendChild(group);
   });
+}
+
+function renderItemGroup(item, offersForItem) {
+  const group = document.createElement('div');
+  group.className = 'item-group';
+
+  const header = document.createElement('div');
+  header.className = 'item-header';
+  const listedPrice = offersForItem[0].listedPrice;
+  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>`;
+  group.appendChild(header);
+
+  offersForItem.forEach((o) => {
+    const row = document.createElement('div');
+    row.className = 'offer-row' + (o.winner ? ' winner' : '');
+    const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+    const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
+    row.innerHTML = `
+      ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
+      <span class="name">${escapeHtml(o.name || '(no name)')}</span>
+      ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
+      ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}</span>` : ''}
+      <span class="${badgeClass}">${escapeHtml(o.source)}</span>
+      <span class="meta">${dateStr}</span>
+      ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
+      ${o.winnerNote ? `<span class="winner-note">${escapeHtml(o.winnerNote)}</span>` : ''}
+    `;
+    group.appendChild(row);
+  });
+
+  return group;
 }
 
 function escapeHtml(str) {

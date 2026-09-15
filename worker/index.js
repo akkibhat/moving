@@ -57,6 +57,24 @@ function listedPriceFor(item) {
   return ITEM_LISTED_PRICES[item] || 'unknown';
 }
 
+// Mirrors each item's data-status on the public page (Available / Pending
+// Sale / Sold) — kept here for the same reason as ITEM_LISTED_PRICES above.
+// Only items that currently have a non-Available status are listed; update
+// this whenever an item's status changes on the site.
+const ITEM_STATUS = {
+  'Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)': 'Pending Sale',
+  'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': 'Pending Sale',
+  'SmartVU+ A7070 — Satellite/Freeview Receiver': 'Sold',
+  'Xiaomi Mi Box — Android TV Streaming Box': 'Sold',
+  'Logitech MX Master 3 Wireless Mouse': 'Pending Sale',
+  'Ozito PXC 18V Drill + LED Worklight + Battery + Charger': 'Pending Sale',
+  'PS4 DualShock 4 Controllers + Charging Dock': 'Pending Sale',
+};
+
+function statusFor(item) {
+  return ITEM_STATUS[item] || 'Available';
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -159,22 +177,32 @@ async function handleGetOffers(request, env) {
     return jsonResponse({ error: 'Unauthorized' }, 401);
   }
 
-  const offers = [];
+  // List all keys first (paginating if there are ever more than one page),
+  // then fetch every value in parallel rather than one at a time — with a
+  // few dozen offers, sequential gets were adding a noticeable delay before
+  // the admin page could render.
+  const allKeys = [];
   let cursor;
   do {
     const list = await env.OFFERS_KV.list({ prefix: 'offer:', cursor });
-    for (const key of list.keys) {
-      const value = await env.OFFERS_KV.get(key.name);
-      if (value) offers.push(JSON.parse(value));
-    }
+    allKeys.push(...list.keys);
     cursor = list.cursor;
   } while (cursor);
 
+  const values = await Promise.all(allKeys.map((key) => env.OFFERS_KV.get(key.name)));
+  const offers = allKeys
+    .map((key, i) => (values[i] ? { key: key.name, ...JSON.parse(values[i]) } : null))
+    .filter(Boolean);
+
   offers.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-  // Attach the current listed price at read time so every offer (old and
-  // new) shows it, without needing to backfill stored records.
-  const withPrices = offers.map((o) => ({ ...o, listedPrice: listedPriceFor(o.item) }));
+  // Attach the current listed price/status at read time so every offer (old
+  // and new) shows them, without needing to backfill stored records.
+  const withPrices = offers.map((o) => ({
+    ...o,
+    listedPrice: listedPriceFor(o.item),
+    itemStatus: statusFor(o.item),
+  }));
 
   return jsonResponse(withPrices);
 }
