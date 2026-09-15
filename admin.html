@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Moving Sale — Offers (Private)</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --ink: #1c1b19;
+    --muted: #6b6660;
+    --card-bg: #ffffff;
+    --accent: #b5502c;
+    --accent-soft: #f2e2da;
+    --line: #e7e2d9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 28px; font-size: 0.9rem; }
+  .gate {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .gate input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 14px 0;
+  }
+  .gate button, .refresh-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gate .error { color: var(--accent); font-size: 0.85rem; min-height: 1.2em; }
+  [hidden] { display: none !important; }
+  .item-group {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .item-header {
+    background: var(--accent-soft);
+    padding: 12px 16px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-count { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .offer-row {
+    padding: 12px 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    align-items: baseline;
+  }
+  .offer-row .name { font-weight: 600; }
+  .offer-row .amount { color: var(--accent); font-weight: 700; }
+  .offer-row .meta { color: var(--muted); font-size: 0.82rem; }
+  .offer-row .message { flex-basis: 100%; font-size: 0.88rem; color: #45413c; margin-top: 2px; }
+  .badge {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--line);
+    color: var(--muted);
+  }
+  .badge.web { background: #eef4ec; color: #3d5c37; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <h1 style="font-size:1.2rem;">Private — offers log</h1>
+  <p class="sub" style="margin-bottom:0;">Enter the password to view.</p>
+  <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+  <div class="error" id="gateError"></div>
+  <button onclick="unlock()">Unlock</button>
+</div>
+
+<div class="wrap" id="content" hidden>
+  <div class="toolbar">
+    <div>
+      <h1>Offers on your listings</h1>
+      <p class="sub">Combines real offers from the website form with anything you've added manually (Geekzone, private messages).</p>
+    </div>
+    <button class="refresh-btn" onclick="loadOffers()">Refresh</button>
+  </div>
+  <div id="groups"></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'movingsale-admin-password';
+
+function unlock() {
+  const pw = document.getElementById('passwordInput').value;
+  sessionStorage.setItem(STORAGE_KEY, pw);
+  loadOffers();
+}
+
+async function loadOffers() {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  const res = await fetch('/.netlify/functions/offers', {
+    headers: { 'X-Admin-Password': pw },
+  });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    document.getElementById('gate').hidden = false;
+    document.getElementById('content').hidden = true;
+    document.getElementById('gateError').textContent = 'Wrong password.';
+    return;
+  }
+
+  document.getElementById('gate').hidden = true;
+  document.getElementById('content').hidden = false;
+
+  const offers = await res.json();
+  renderGroups(offers);
+}
+
+function renderGroups(offers) {
+  const container = document.getElementById('groups');
+  container.innerHTML = '';
+
+  if (!offers.length) {
+    container.innerHTML = '<div class="empty">No offers yet.</div>';
+    return;
+  }
+
+  const byItem = {};
+  offers.forEach((o) => {
+    if (!byItem[o.item]) byItem[o.item] = [];
+    byItem[o.item].push(o);
+  });
+
+  // Order item groups by their most recent offer, newest first.
+  const itemNames = Object.keys(byItem).sort((a, b) => {
+    const da = new Date(byItem[a][0].date || 0).getTime();
+    const db = new Date(byItem[b][0].date || 0).getTime();
+    return db - da;
+  });
+
+  itemNames.forEach((item) => {
+    const group = document.createElement('div');
+    group.className = 'item-group';
+
+    const header = document.createElement('div');
+    header.className = 'item-header';
+    header.innerHTML = `<span>${escapeHtml(item)}</span><span class="item-count">${byItem[item].length} offer${byItem[item].length === 1 ? '' : 's'}</span>`;
+    group.appendChild(header);
+
+    byItem[item].forEach((o) => {
+      const row = document.createElement('div');
+      row.className = 'offer-row';
+      const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+      const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
+      row.innerHTML = `
+        <span class="name">${escapeHtml(o.name || '(no name)')}</span>
+        ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
+        ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}</span>` : ''}
+        <span class="${badgeClass}">${escapeHtml(o.source)}</span>
+        <span class="meta">${dateStr}</span>
+        ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
+      `;
+      group.appendChild(row);
+    });
+
+    container.appendChild(group);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// If a password is already stashed for this browser session, skip the gate.
+if (sessionStorage.getItem(STORAGE_KEY)) {
+  loadOffers();
+}
+</script>
+</body>
+</html>
