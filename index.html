@@ -74,6 +74,14 @@
     color: white;
     border-color: var(--accent);
   }
+  .status-filters {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
   main {
     max-width: 1100px;
     margin: 0 auto;
@@ -93,11 +101,16 @@
   .card.hidden { display: none; }
   .card.pending .card-body { opacity: 0.7; }
   .card.pending .gallery { filter: grayscale(0.25); }
+  .card.sold .card-body { opacity: 0.55; }
+  .card.sold .gallery { filter: grayscale(0.6); }
   .status-badge {
     position: absolute; top: 10px; left: 10px; z-index: 5;
     background: var(--warn-bg); border: 1px solid var(--warn-line); color: #8a5a12;
     font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700;
     padding: 4px 10px; border-radius: 999px;
+  }
+  .status-badge.sold-badge {
+    background: #f4e2e0; border-color: #cf9d97; color: #8a2f22;
   }
   .offer-btn:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
   .gallery { position: relative; background: #efece5; aspect-ratio: 4/3; overflow: hidden; }
@@ -200,9 +213,10 @@
   </div>
 </header>
 <div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (27)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (7)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (3)</button><button class="filter-btn" data-cat="Computer Accessories" onclick="filterCat(this)">Computer Accessories (3)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (2)</button></div>
+<div class="status-filters"><button class="filter-btn active" data-status="all" onclick="filterStatus(this)">All statuses (27)</button><button class="filter-btn" data-status="Available" onclick="filterStatus(this)">Available (20)</button><button class="filter-btn" data-status="Pending Sale" onclick="filterStatus(this)">Pending Sale (5)</button><button class="filter-btn" data-status="Sold" onclick="filterStatus(this)">Sold (2)</button></div>
 <main id="grid">
 
-    <article class="card" id="grandstream-ht802" data-category="Networking">
+    <article class="card" id="grandstream-ht802" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151402.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151408.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151414.jpg" alt="Grandstream HT802 — 2-Port VoIP ATA" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -225,7 +239,7 @@
       </div>
     </article>
 
-    <article class="card" id="mikrotik-routerboard" data-category="Networking">
+    <article class="card" id="mikrotik-routerboard" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151434.jpg" alt="MikroTik RouterBOARD RBM33G" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151447.jpg" alt="MikroTik RouterBOARD RBM33G" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -248,7 +262,7 @@
       </div>
     </article>
 
-    <article class="card" id="edimax-en9320sfp" data-category="Networking — 10G cards">
+    <article class="card" id="edimax-en9320sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151513.jpg" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151519.jpg" alt="Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -271,7 +285,7 @@
       </div>
     </article>
 
-    <article class="card" id="qnap-qxg-10g2t" data-category="Networking — 10G cards">
+    <article class="card" id="qnap-qxg-10g2t" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151526.jpg" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151533.jpg" alt="QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -294,7 +308,7 @@
       </div>
     </article>
 
-    <article class="card" id="hpe-562sfp" data-category="Networking — 10G cards">
+    <article class="card" id="hpe-562sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_151547.jpg" alt="HPE Ethernet 10Gb 2-Port 562SFP+ Adapter" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — 10G cards</div>
@@ -312,8 +326,10 @@
       </div>
     </article>
 
-    <article class="card" id="dell-h44490" data-category="Networking — 10G cards">
-      <div class="gallery single"><img class="photo" src="images/20260914_151553.jpg" alt="Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)" loading="lazy"></div>
+    <article class="card pending" id="dell-h44490" data-category="Networking — 10G cards" data-status="Pending Sale">
+      <div class="gallery single">
+      <span class="status-badge">Pending sale</span>
+      <img class="photo" src="images/20260914_151553.jpg" alt="Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — 10G cards</div>
         <h3>Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)</h3>
@@ -326,11 +342,11 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$50 NZD</div>
         </div>
-        <button class="offer-btn" onclick="openOfferModal('Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)')">Make an offer</button>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
       </div>
     </article>
 
-    <article class="card" id="hp-526flr-sfp" data-category="Networking — 10G cards">
+    <article class="card" id="hp-526flr-sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151601.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151609.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151612.jpg" alt="HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -353,7 +369,7 @@
       </div>
     </article>
 
-    <article class="card" id="hpe-560flr-sfp" data-category="Networking — 10G cards">
+    <article class="card" id="hpe-560flr-sfp" data-category="Networking — 10G cards" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_151625.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151629.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_151630.jpg" alt="HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -376,8 +392,10 @@
       </div>
     </article>
 
-    <article class="card" id="fs-10g-dac-cables" data-category="Networking — cables">
-      <div class="gallery single"><img class="photo" src="images/20260914_151733.jpg" alt="FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5" loading="lazy"></div>
+    <article class="card pending" id="fs-10g-dac-cables" data-category="Networking — cables" data-status="Pending Sale">
+      <div class="gallery single">
+      <span class="status-badge">Pending sale</span>
+      <img class="photo" src="images/20260914_151733.jpg" alt="FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — cables</div>
         <h3>FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5</h3>
@@ -390,11 +408,11 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$100 NZD <span class="per-note">(for all 5 cables together)</span></div>
         </div>
-        <button class="offer-btn" onclick="openOfferModal('FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5')">Make an offer</button>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
       </div>
     </article>
 
-    <article class="card" id="tplink-powerline-av1300" data-category="Networking">
+    <article class="card" id="tplink-powerline-av1300" data-category="Networking" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_151754.jpg" alt="TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking</div>
@@ -412,7 +430,7 @@
       </div>
     </article>
 
-    <article class="card" id="ubiquiti-uf-rj45-10g" data-category="Networking — transceivers">
+    <article class="card" id="ubiquiti-uf-rj45-10g" data-category="Networking — transceivers" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_151904.jpg" alt="Ubiquiti UF-RJ45-10G Transceivers (×3)" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking — transceivers</div>
@@ -430,7 +448,7 @@
       </div>
     </article>
 
-    <article class="card" id="pioneer-ddj-sr" data-category="DJ / Audio">
+    <article class="card" id="pioneer-ddj-sr" data-category="DJ / Audio" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_152015.jpg" alt="Pioneer DDJ-SR — Serato DJ Controller" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">DJ / Audio</div>
@@ -448,7 +466,7 @@
       </div>
     </article>
 
-    <article class="card" id="ravpower-sony-batteries" data-category="Photography">
+    <article class="card" id="ravpower-sony-batteries" data-category="Photography" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152029.jpg" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152036.jpg" alt="RAVPower Dual Charger + 2× Sony NP-FW50 Batteries" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -471,7 +489,7 @@
       </div>
     </article>
 
-    <article class="card" id="tplink-powerline-av2000" data-category="Networking">
+    <article class="card" id="tplink-powerline-av2000" data-category="Networking" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_152056.jpg" alt="TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Networking</div>
@@ -489,7 +507,7 @@
       </div>
     </article>
 
-    <article class="card" id="tplink-archer-ax72" data-category="Networking">
+    <article class="card" id="tplink-archer-ax72" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152108.jpg" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152130.jpg" alt="TP-Link Archer AX72 — AX5400 WiFi 6 Router" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -512,7 +530,7 @@
       </div>
     </article>
 
-    <article class="card" id="kenwood-dashcam" data-category="Car Electronics">
+    <article class="card" id="kenwood-dashcam" data-category="Car Electronics" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_152144.jpg" alt="Kenwood Full HD Dash Cam" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Car Electronics</div>
@@ -530,9 +548,9 @@
       </div>
     </article>
 
-    <article class="card pending" id="smartvu-a7070" data-category="Home Entertainment">
+    <article class="card sold" id="smartvu-a7070" data-category="Home Entertainment" data-status="Sold">
       <div class="gallery multi" data-count="3">
-      <span class="status-badge">Pending sale</span>
+      <span class="status-badge sold-badge">Sold</span>
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152156.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152201.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152204.jpg" alt="SmartVU+ A7070 — Satellite/Freeview Receiver" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
@@ -550,13 +568,13 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$50 NZD</div>
         </div>
-        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
+        <button class="offer-btn" disabled title="Sold">Sold</button>
       </div>
     </article>
 
-    <article class="card pending" id="xiaomi-mi-box" data-category="Home Entertainment">
+    <article class="card sold" id="xiaomi-mi-box" data-category="Home Entertainment" data-status="Sold">
       <div class="gallery multi" data-count="2">
-      <span class="status-badge">Pending sale</span>
+      <span class="status-badge sold-badge">Sold</span>
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152213.jpg" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152219.jpg" alt="Xiaomi Mi Box — Android TV Streaming Box" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
@@ -574,11 +592,11 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$25 NZD</div>
         </div>
-        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
+        <button class="offer-btn" disabled title="Sold">Sold</button>
       </div>
     </article>
 
-    <article class="card" id="microsoft-surface-dock" data-category="Computer Accessories">
+    <article class="card" id="microsoft-surface-dock" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152236.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152243.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152249.jpg" alt="Microsoft Surface Dock (1st gen, 1661) + Power Supply" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -601,8 +619,9 @@
       </div>
     </article>
 
-    <article class="card" id="logitech-mx-master-3" data-category="Computer Accessories">
+    <article class="card pending" id="logitech-mx-master-3" data-category="Computer Accessories" data-status="Pending Sale">
       <div class="gallery multi" data-count="2">
+      <span class="status-badge">Pending sale</span>
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152325.jpg" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152331.jpg" alt="Logitech MX Master 3 Wireless Mouse" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
       <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
@@ -620,11 +639,11 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$50 NZD</div>
         </div>
-        <button class="offer-btn" onclick="openOfferModal('Logitech MX Master 3 Wireless Mouse')">Make an offer</button>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
       </div>
     </article>
 
-    <article class="card" id="wacom-intuos-ctl4100wl" data-category="Computer Accessories">
+    <article class="card" id="wacom-intuos-ctl4100wl" data-category="Computer Accessories" data-status="Available">
       <div class="gallery multi" data-count="2">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152358.jpg" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152402.jpg" alt="Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -647,7 +666,7 @@
       </div>
     </article>
 
-    <article class="card" id="huawei-b818" data-category="Networking">
+    <article class="card" id="huawei-b818" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152414.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152418.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152422.jpg" alt="Huawei B818-263 — 4G LTE WiFi Router" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -670,7 +689,7 @@
       </div>
     </article>
 
-    <article class="card pending" id="ozito-pxc-set" data-category="Tools">
+    <article class="card pending" id="ozito-pxc-set" data-category="Tools" data-status="Pending Sale">
       <div class="gallery single">
       <span class="status-badge">Pending sale</span>
       <img class="photo" src="images/20260914_152702.jpg" alt="Ozito PXC 18V Drill + LED Worklight + Battery + Charger" loading="lazy"></div>
@@ -690,8 +709,10 @@
       </div>
     </article>
 
-    <article class="card" id="ps4-controllers-dock" data-category="Gaming">
-      <div class="gallery single"><img class="photo" src="images/20260914_152828.jpg" alt="PS4 DualShock 4 Controllers + Charging Dock" loading="lazy"></div>
+    <article class="card pending" id="ps4-controllers-dock" data-category="Gaming" data-status="Pending Sale">
+      <div class="gallery single">
+      <span class="status-badge">Pending sale</span>
+      <img class="photo" src="images/20260914_152828.jpg" alt="PS4 DualShock 4 Controllers + Charging Dock" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Gaming</div>
         <h3>PS4 DualShock 4 Controllers + Charging Dock</h3>
@@ -704,11 +725,11 @@
           <div class="price-label">Asking (approx — make an offer)</div>
           <div class="price">$40 NZD <span class="per-note">(each — buy both and get the charging dock free)</span></div>
         </div>
-        <button class="offer-btn" onclick="openOfferModal('PS4 DualShock 4 Controllers + Charging Dock')">Make an offer</button>
+        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
       </div>
     </article>
 
-    <article class="card" id="ps3-slim" data-category="Gaming">
+    <article class="card" id="ps3-slim" data-category="Gaming" data-status="Available">
       <div class="gallery single"><img class="photo" src="images/20260914_152921.jpg" alt="PlayStation 3 (Slim)" loading="lazy"></div>
       <div class="card-body">
         <div class="eyebrow">Gaming</div>
@@ -726,7 +747,7 @@
       </div>
     </article>
 
-    <article class="card" id="cisco-spa112" data-category="Networking">
+    <article class="card" id="cisco-spa112" data-category="Networking" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152839.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152843.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152847.jpg" alt="Cisco SPA112 — 2-Port VoIP Phone Adapter" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -749,7 +770,7 @@
       </div>
     </article>
 
-    <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment">
+    <article class="card" id="hdmi-extender-lkv372a" data-category="Home Entertainment" data-status="Available">
       <div class="gallery multi" data-count="3">
       <div class="slides"><div class="slide"><img class="photo" src="images/20260914_152948.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_152955.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div><div class="slide"><img class="photo" src="images/20260914_153005.jpg" alt="HDMI Extender Kit — Sender + Receiver (LKV372A)" loading="lazy"></div></div>
       <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
@@ -784,6 +805,7 @@
       <form id='offerForm' method='POST' name='offer' onsubmit='submitOfferForm(event)'>
         <input type="hidden" name="form-name" value="offer">
         <input type="hidden" name="item" id="offerItemField">
+        <input type="hidden" name="subject" id="offerSubjectField">
         <p style="display:none"><label>Leave this blank: <input name="bot-field"></label></p>
         <label for="offerName">Your name</label>
         <input id="offerName" name="name" type="text" required>
@@ -831,6 +853,10 @@ function encodeFormData(data) {
 function submitOfferForm(e) {
   e.preventDefault();
   const form = e.target;
+  // Netlify Forms uses a field named "subject" as the notification email's
+  // subject line if present — set it here so each offer arrives as its own
+  // thread instead of all offers bunching into one "New form submission" thread.
+  document.getElementById('offerSubjectField').value = `Offer from ${document.getElementById('offerEmail').value}`;
   const formData = new FormData(form);
   const payload = {};
   formData.forEach((v, k) => payload[k] = v);
@@ -847,7 +873,7 @@ function submitOfferForm(e) {
     })
     .catch(() => {
       // Fallback for when this isn't deployed on Netlify (e.g. opened as a local file) — opens an email instead.
-      const subject = `Offer: ${currentOfferItem}`;
+      const subject = `Offer from ${payload.email}`;
       const body = `From: ${payload.name} (${payload.email})\nOffer: ${payload.offer || 'n/a'}\n\n${payload.message}`;
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       closeOfferModal();
@@ -856,13 +882,27 @@ function submitOfferForm(e) {
 </script>
 
 <script>
-function filterCat(btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const cat = btn.dataset.cat;
+let currentCategory = 'all';
+let currentStatus = 'all';
+
+function applyFilters() {
   document.querySelectorAll('.card').forEach(card => {
-    card.classList.toggle('hidden', cat !== 'all' && card.dataset.category !== cat);
+    const matchesCategory = currentCategory === 'all' || card.dataset.category === currentCategory;
+    const matchesStatus = currentStatus === 'all' || card.dataset.status === currentStatus;
+    card.classList.toggle('hidden', !(matchesCategory && matchesStatus));
   });
+}
+function filterCat(btn) {
+  document.querySelectorAll('.filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCategory = btn.dataset.cat;
+  applyFilters();
+}
+function filterStatus(btn) {
+  document.querySelectorAll('.status-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentStatus = btn.dataset.status;
+  applyFilters();
 }
 function shiftSlide(btn, dir) {
   const gallery = btn.closest('.gallery');
