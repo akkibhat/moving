@@ -71,6 +71,7 @@
     align-items: center;
   }
   .item-count { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .listed-price { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
   .offer-row {
     padding: 12px 16px;
     border-top: 1px solid var(--line);
@@ -178,7 +179,8 @@ function renderGroups(offers) {
 
     const header = document.createElement('div');
     header.className = 'item-header';
-    header.innerHTML = `<span>${escapeHtml(item)}</span><span class="item-count">${byItem[item].length} offer${byItem[item].length === 1 ? '' : 's'}</span>`;
+    const listedPrice = byItem[item][0].listedPrice;
+    header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span class="item-count">${byItem[item].length} offer${byItem[item].length === 1 ? '' : 's'}</span>`;
     group.appendChild(header);
 
     byItem[item].forEach((o) => {

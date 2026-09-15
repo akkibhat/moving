@@ -19,6 +19,44 @@
 
 const SENDER_EMAIL = 'offers@move.pi.co.nz';
 
+// The original asking price for each listing, as shown on the public page.
+// Kept here (rather than re-parsing index.html at request time) so offer
+// emails and the admin view can show "asking $X" next to whatever the buyer
+// actually offered. Update this if a listed price on the site changes.
+const ITEM_LISTED_PRICES = {
+  'Grandstream HT802 — 2-Port VoIP ATA': '$30 NZD',
+  'MikroTik RouterBOARD RBM33G': '$50 NZD',
+  'TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)': '$100 NZD',
+  'TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)': '$130 NZD',
+  'TP-Link Archer AX72 — AX5400 WiFi 6 Router': '$150 NZD',
+  'Huawei B818-263 — 4G LTE WiFi Router': '$50 NZD',
+  'Cisco SPA112 — 2-Port VoIP Phone Adapter': '$30 NZD',
+  'Edimax EN-9320SFP+ — Dual-Port 10G SFP+ NIC': '$50 NZD',
+  'QNAP QXG-10G2T — Dual-Port 10GbE (RJ45) Expansion Card': '$100 NZD',
+  'HPE Ethernet 10Gb 2-Port 562SFP+ Adapter': '$100 NZD',
+  'Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)': '$50 NZD',
+  'HP FlexFabric 10Gb 2-Port 526FLR-SFP+ Adapter': '$40 NZD',
+  'HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter': '$50 NZD',
+  'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': '$100 NZD',
+  'Ubiquiti UF-RJ45-10G Transceivers (×3)': '$70 NZD',
+  'Pioneer DDJ-SR — Serato DJ Controller': '$500 NZD',
+  'RAVPower Dual Charger + 2× Sony NP-FW50 Batteries': '$120 NZD',
+  'Kenwood Full HD Dash Cam': '$50 NZD',
+  'SmartVU+ A7070 — Satellite/Freeview Receiver': '$50 NZD',
+  'Xiaomi Mi Box — Android TV Streaming Box': '$25 NZD',
+  'HDMI Extender Kit — Sender + Receiver (LKV372A)': '$40 NZD',
+  'Microsoft Surface Dock (1st gen, 1661) + Power Supply': '$60 NZD',
+  'Logitech MX Master 3 Wireless Mouse': '$50 NZD',
+  'Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet': '$30 NZD',
+  'Ozito PXC 18V Drill + LED Worklight + Battery + Charger': '$60 NZD',
+  'PS4 DualShock 4 Controllers + Charging Dock': '$40 NZD',
+  'PlayStation 3 (Slim)': '$100 NZD',
+};
+
+function listedPriceFor(item) {
+  return ITEM_LISTED_PRICES[item] || 'unknown';
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -108,7 +146,7 @@ async function sendNotificationEmail(env, record) {
       to: env.NOTIFY_EMAIL,
       reply_to: record.email,
       subject: `Offer from ${record.email}`,
-      text: `Item: ${record.item}\nName: ${record.name}\nEmail: ${record.email}\nOffer: ${record.offerAmount || 'n/a'}\n\n${record.message}`,
+      text: `Item: ${record.item}\nListed at: ${listedPriceFor(record.item)}\nName: ${record.name}\nEmail: ${record.email}\nOffer: ${record.offerAmount || 'n/a'}\n\n${record.message}`,
     }),
   });
 }
@@ -134,7 +172,11 @@ async function handleGetOffers(request, env) {
 
   offers.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-  return jsonResponse(offers);
+  // Attach the current listed price at read time so every offer (old and
+  // new) shows it, without needing to backfill stored records.
+  const withPrices = offers.map((o) => ({ ...o, listedPrice: listedPriceFor(o.item) }));
+
+  return jsonResponse(withPrices);
 }
 
 function jsonResponse(data, status = 200) {
