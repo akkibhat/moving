@@ -72,6 +72,15 @@
   }
   .item-count { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
   .listed-price { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .total-revenue {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-size: 1.05rem;
+  }
+  .total-revenue b { color: var(--accent); font-size: 1.3rem; }
+  .total-revenue .total-note { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
   .status-section-heading {
     font-size: 1.1rem;
     margin: 28px 0 12px;
@@ -161,6 +170,7 @@
     <button class="tab-btn active" id="tabOffersBtn" onclick="switchTab('offers')">Offers</button>
     <button class="tab-btn" id="tabVisitsBtn" onclick="switchTab('visits')">Page Views</button>
   </div>
+  <div class="total-revenue" id="totalRevenue" hidden></div>
   <div id="groups"></div>
   <div id="visitsWrap" hidden></div>
 </div>
@@ -227,6 +237,7 @@ function switchTab(tab) {
   document.getElementById('tabOffersBtn').classList.toggle('active', tab === 'offers');
   document.getElementById('tabVisitsBtn').classList.toggle('active', tab === 'visits');
   document.getElementById('groups').hidden = tab !== 'offers';
+  document.getElementById('totalRevenue').hidden = tab !== 'offers';
   document.getElementById('visitsWrap').hidden = tab !== 'visits';
 
   if (tab === 'offers') {
@@ -313,6 +324,7 @@ function renderGroups(offers) {
 
   if (!offers.length) {
     container.innerHTML = '<div class="empty">No offers yet.</div>';
+    document.getElementById('totalRevenue').innerHTML = '';
     return;
   }
 
@@ -323,6 +335,8 @@ function renderGroups(offers) {
   });
 
   const itemNames = Object.keys(byItem);
+
+  renderTotalRevenue(byItem, itemNames);
 
   // Group items by their current status (Pending Sale / Sold / Available)
   // so the log reads as "what needs action" vs "already done" at a glance,
@@ -343,6 +357,39 @@ function renderGroups(offers) {
       container.appendChild(renderItemGroup(item, byItem[item]));
     });
   });
+}
+
+// Pulls the first number out of a price string ("$150 NZD" -> 150,
+// "$150 NZD ($200 w/ cable)" -> 150, "Free" -> 0, "" -> null).
+function parseMoney(str) {
+  if (!str) return null;
+  const match = String(str).replace(/,/g, '').match(/[\d.]+/);
+  return match ? parseFloat(match[0]) : 0;
+}
+
+// Total made so far: for each Sold item, use the winning offer's amount if
+// one was recorded, otherwise fall back to the item's listed price.
+function renderTotalRevenue(byItem, itemNames) {
+  const el = document.getElementById('totalRevenue');
+  let total = 0;
+  let soldCount = 0;
+
+  itemNames.forEach((item) => {
+    const offersForItem = byItem[item];
+    if ((offersForItem[0].itemStatus || 'Available') !== 'Sold') return;
+    soldCount += 1;
+
+    const winnerOffer = offersForItem.find((o) => o.winner && parseMoney(o.offerAmount) !== null);
+    const amount = winnerOffer ? parseMoney(winnerOffer.offerAmount) : parseMoney(offersForItem[0].listedPrice);
+    total += amount || 0;
+  });
+
+  if (!soldCount) {
+    el.innerHTML = '';
+    return;
+  }
+
+  el.innerHTML = `Total made so far: <b>$${total.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price</span>`;
 }
 
 function renderItemGroup(item, offersForItem) {
