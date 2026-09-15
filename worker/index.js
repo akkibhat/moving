@@ -96,7 +96,7 @@ const ITEM_STATUS = {
   'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': 'Sold',
   'SmartVU+ A7070 — Satellite/Freeview Receiver': 'Sold',
   'Xiaomi Mi Box — Android TV Streaming Box': 'Sold',
-  'Logitech MX Master 3 Wireless Mouse': 'Pending Sale',
+  'Logitech MX Master 3 Wireless Mouse': 'Sold',
   'Ozito PXC 18V Drill + LED Worklight + Battery + Charger': 'Pending Sale',
   'PS4 DualShock 4 Controllers + Charging Dock': 'Sold',
   'Free Dongle Bundle': 'Sold',
