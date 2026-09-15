@@ -92,13 +92,15 @@ function listedPriceFor(item) {
 // Only items that currently have a non-Available status are listed; update
 // this whenever an item's status changes on the site.
 const ITEM_STATUS = {
-  'Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)': 'Pending Sale',
-  'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': 'Pending Sale',
+  'Dell 10Gb SFP+ Dual-Port Adapter (P/N H44490-020)': 'Sold',
+  'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': 'Sold',
   'SmartVU+ A7070 — Satellite/Freeview Receiver': 'Sold',
   'Xiaomi Mi Box — Android TV Streaming Box': 'Sold',
   'Logitech MX Master 3 Wireless Mouse': 'Pending Sale',
   'Ozito PXC 18V Drill + LED Worklight + Battery + Charger': 'Pending Sale',
-  'PS4 DualShock 4 Controllers + Charging Dock': 'Pending Sale',
+  'PS4 DualShock 4 Controllers + Charging Dock': 'Sold',
+  'Free Dongle Bundle': 'Sold',
+  'Kogan SmarterHome™ LS16 Robot Vacuum + Auto-Empty Dock': 'Pending Sale',
 };
 
 function statusFor(item) {
