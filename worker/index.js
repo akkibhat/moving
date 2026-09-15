@@ -51,7 +51,7 @@ const ITEM_LISTED_PRICES = {
   'HPE Ethernet 10Gb 2-Port 560FLR-SFP+ Adapter': '$50 NZD',
   'FS.com 10G SFP+ DAC Cables (Twinax) — Set of 5': '$100 NZD',
   'Ubiquiti UF-RJ45-10G Transceivers (×3)': '$70 NZD',
-  'Pioneer DDJ-SR — Serato DJ Controller': '$500 NZD',
+  'Pioneer DDJ-SR — Serato DJ Controller': '$350 NZD',
   'RAVPower Dual Charger + 2× Sony NP-FW50 Batteries': '$120 NZD',
   'Kenwood Full HD Dash Cam': '$50 NZD',
   'SmartVU+ A7070 — Satellite/Freeview Receiver': '$50 NZD',
