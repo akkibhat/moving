@@ -9,11 +9,23 @@
 //   GET  /api/offers          - password-gated: returns every stored offer
 //                                (public submissions + manually-added ones)
 //                                for the private admin.html page
+//   GET  /api/visits          - password-gated: returns recent visit logs
+//                                (IP, country, referrer, user-agent) for the
+//                                private admin.html page
+//
+// Every request for the public listing page ("/") is also logged into
+// VISITS_KV, fire-and-forget via ctx.waitUntil so it never slows down the
+// visitor's page load. Captures everything Cloudflare exposes for free on
+// the request: IP, country/region/city/postal code/timezone/lat-long, ISP
+// (ASN + org), which Cloudflare datacenter served them, HTTP/TLS protocol
+// version, round-trip latency, Accept-Language, referrer, and user-agent.
 //
 // Required bindings/secrets (see wrangler.toml / `wrangler secret put`):
 //   OFFERS_KV       - KV namespace storing all offers
+//   VISITS_KV       - KV namespace storing page-visit logs
 //   IMAGES          - R2 bucket with the resized WebP photos
 //   ADMIN_PASSWORD  - shared secret admin.html must send to read /api/offers
+//                     and /api/visits
 //   RESEND_API_KEY  - Resend API key used to email new-offer notifications
 //   NOTIFY_EMAIL    - where offer notification emails get sent (Akki's inbox)
 
@@ -94,7 +106,7 @@ function statusFor(item) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith('/images/')) {
@@ -106,12 +118,51 @@ export default {
     if (url.pathname === '/api/offers' && request.method === 'GET') {
       return handleGetOffers(request, env);
     }
+    if (url.pathname === '/api/visits' && request.method === 'GET') {
+      return handleGetVisits(request, env);
+    }
+
+    // Log a visit to the public listing page itself — not admin.html (that's
+    // just Akki checking his own site) and not asset/API requests (way too
+    // noisy). Fire-and-forget via waitUntil so it never delays the response.
+    if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
+      ctx.waitUntil(logVisit(request, env));
+    }
 
     // Fallback to static assets for anything else (normally not reached,
     // since matching static files are served before the Worker runs).
     return env.ASSETS.fetch(request);
   },
 };
+
+async function logVisit(request, env) {
+  const now = new Date();
+  const id = `visit:${now.toISOString()}:${crypto.randomUUID().slice(0, 8)}`;
+  const record = {
+    date: now.toISOString(),
+    ip: request.headers.get('cf-connecting-ip') || '',
+    country: request.cf?.country || '',
+    city: request.cf?.city || '',
+    region: request.cf?.region || '',
+    regionCode: request.cf?.regionCode || '',
+    postalCode: request.cf?.postalCode || '',
+    timezone: request.cf?.timezone || '',
+    latitude: request.cf?.latitude || '',
+    longitude: request.cf?.longitude || '',
+    asn: request.cf?.asn || '',
+    asOrganization: request.cf?.asOrganization || '',
+    colo: request.cf?.colo || '',
+    httpProtocol: request.cf?.httpProtocol || '',
+    tlsVersion: request.cf?.tlsVersion || '',
+    clientTcpRtt: request.cf?.clientTcpRtt ?? '',
+    acceptLanguage: request.headers.get('accept-language') || '',
+    referrer: request.headers.get('referer') || '',
+    userAgent: request.headers.get('user-agent') || '',
+  };
+  // Keep visit logs for 90 days — plenty for a temporary moving-sale site,
+  // and avoids the KV namespace growing unbounded forever.
+  await env.VISITS_KV.put(id, JSON.stringify(record), { expirationTtl: 60 * 60 * 24 * 90 });
+}
 
 async function handleImage(request, env, url) {
   const key = decodeURIComponent(url.pathname.replace('/images/', ''));
@@ -223,6 +274,37 @@ async function handleGetOffers(request, env) {
   }));
 
   return jsonResponse(withPrices);
+}
+
+async function handleGetVisits(request, env) {
+  const suppliedPassword =
+    request.headers.get('x-admin-password') || new URL(request.url).searchParams.get('password');
+
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  // Most recent 500 visits — this list can grow fast, so cap it rather than
+  // pulling every visit in the 90-day retention window on every request.
+  const allKeys = [];
+  let cursor;
+  do {
+    const list = await env.VISITS_KV.list({ prefix: 'visit:', cursor, limit: 1000 });
+    allKeys.push(...list.keys);
+    cursor = list.cursor;
+    if (allKeys.length >= 500) break;
+  } while (cursor);
+
+  // Keys are ISO-timestamp-prefixed, so sorting the keys themselves (newest
+  // first) avoids fetching every value just to sort — then only fetch the
+  // most recent 500.
+  allKeys.sort((a, b) => (a.name < b.name ? 1 : -1));
+  const recentKeys = allKeys.slice(0, 500);
+
+  const values = await Promise.all(recentKeys.map((key) => env.VISITS_KV.get(key.name)));
+  const visits = values.filter(Boolean).map((v) => JSON.parse(v));
+
+  return jsonResponse(visits);
 }
 
 function jsonResponse(data, status = 200) {

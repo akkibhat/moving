@@ -116,8 +116,24 @@
     color: var(--muted);
   }
   .badge.web { background: #eef4ec; color: #3d5c37; }
-  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
   .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  table.visits { width: 100%; border-collapse: collapse; background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
+  table.visits th, table.visits td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  table.visits th { background: var(--accent-soft); font-weight: 700; }
+  table.visits tr:last-child td { border-bottom: none; }
+  .visits-wrap { overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -135,12 +151,17 @@
 <div class="wrap" id="content" hidden>
   <div class="toolbar">
     <div>
-      <h1>Offers on your listings</h1>
-      <p class="sub">Combines real offers from the website form with anything you've added manually (Geekzone, private messages).</p>
+      <h1 id="pageTitle">Offers on your listings</h1>
+      <p class="sub" id="pageSub">Combines real offers from the website form with anything you've added manually (Geekzone, private messages).</p>
     </div>
-    <button class="refresh-btn" onclick="loadOffers()">Refresh</button>
+    <button class="refresh-btn" onclick="refreshCurrentTab()">Refresh</button>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" id="tabOffersBtn" onclick="switchTab('offers')">Offers</button>
+    <button class="tab-btn" id="tabVisitsBtn" onclick="switchTab('visits')">Page Views</button>
   </div>
   <div id="groups"></div>
+  <div id="visitsWrap" hidden></div>
 </div>
 
 <script>
@@ -151,6 +172,8 @@ function unlock() {
   sessionStorage.setItem(STORAGE_KEY, pw);
   loadOffers();
 }
+
+let currentTab = 'offers';
 
 async function loadOffers() {
   const pw = sessionStorage.getItem(STORAGE_KEY);
@@ -173,6 +196,111 @@ async function loadOffers() {
 
   const offers = await res.json();
   renderGroups(offers);
+}
+
+async function loadVisits() {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  const res = await fetch('/api/visits', {
+    headers: { 'X-Admin-Password': pw },
+  });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    document.getElementById('gate').hidden = false;
+    document.getElementById('content').hidden = true;
+    document.getElementById('gateError').textContent = 'Wrong password.';
+    return;
+  }
+
+  document.getElementById('gate').hidden = true;
+  document.getElementById('content').hidden = false;
+
+  const visits = await res.json();
+  renderVisits(visits);
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabOffersBtn').classList.toggle('active', tab === 'offers');
+  document.getElementById('tabVisitsBtn').classList.toggle('active', tab === 'visits');
+  document.getElementById('groups').hidden = tab !== 'offers';
+  document.getElementById('visitsWrap').hidden = tab !== 'visits';
+
+  if (tab === 'offers') {
+    document.getElementById('pageTitle').textContent = 'Offers on your listings';
+    document.getElementById('pageSub').textContent = "Combines real offers from the website form with anything you've added manually (Geekzone, private messages).";
+    loadOffers();
+  } else {
+    document.getElementById('pageTitle').textContent = 'Page views';
+    document.getElementById('pageSub').textContent = 'Most recent 500 visits to the public listing page (kept for 90 days).';
+    loadVisits();
+  }
+}
+
+function refreshCurrentTab() {
+  if (currentTab === 'offers') loadOffers();
+  else loadVisits();
+}
+
+function renderVisits(visits) {
+  const wrap = document.getElementById('visitsWrap');
+  wrap.innerHTML = '';
+
+  if (!visits.length) {
+    wrap.innerHTML = '<div class="empty">No page views logged yet.</div>';
+    return;
+  }
+
+  const cols = [
+    ['date', 'When'],
+    ['ip', 'IP'],
+    ['city', 'City'],
+    ['region', 'Region'],
+    ['country', 'Country'],
+    ['postalCode', 'Postcode'],
+    ['timezone', 'Timezone'],
+    ['latitude', 'Lat'],
+    ['longitude', 'Lng'],
+    ['asOrganization', 'ISP'],
+    ['asn', 'ASN'],
+    ['colo', 'CF Datacenter'],
+    ['httpProtocol', 'HTTP'],
+    ['tlsVersion', 'TLS'],
+    ['clientTcpRtt', 'RTT (ms)'],
+    ['acceptLanguage', 'Language'],
+    ['referrer', 'Referrer'],
+    ['userAgent', 'User Agent'],
+  ];
+
+  const table = document.createElement('table');
+  table.className = 'visits';
+
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>${cols.map(([, label]) => `<th>${escapeHtml(label)}</th>`).join('')}</tr>`;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  visits.forEach((v) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = cols
+      .map(([key]) => {
+        let val = v[key];
+        if (key === 'date' && val) {
+          val = new Date(val).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+        return `<td title="${escapeHtml(String(val ?? ''))}">${escapeHtml(String(val ?? ''))}</td>`;
+      })
+      .join('');
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  const container = document.createElement('div');
+  container.className = 'visits-wrap';
+  container.appendChild(table);
+  wrap.appendChild(container);
 }
 
 // Sections shown in this order; each only renders if it has items.

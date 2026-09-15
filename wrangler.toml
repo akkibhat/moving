@@ -10,6 +10,10 @@ binding = "ASSETS"
 binding = "OFFERS_KV"
 id = "759478d5f609460f8e75759c17c57954"
 
+[[kv_namespaces]]
+binding = "VISITS_KV"
+id = "f1a55f135e304224ba38cf7e9c51e0cd"
+
 [[r2_buckets]]
 binding = "IMAGES"
 bucket_name = "nzmovingsale-images"
