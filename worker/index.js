@@ -54,6 +54,12 @@ const ITEM_LISTED_PRICES = {
   'TCL 55C635 4K QLED Google TV': '$450 NZD',
   'Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker': '$100 NZD',
   'Assorted Harry Potter Wands + Owl Holder': '$20 NZD',
+  'Netgear Orbi RBR750 Router + 2× RBS750 Satellites': '$350 NZD',
+  'Sony HT-RT40 5.1ch Soundbar System': '$180 NZD',
+  'Nvidia Shield TV + Remote': '$150 NZD',
+  'Black & Decker Dustbuster 4.8V': '$20 NZD',
+  '2-Tier Side Table': '$25 NZD',
+  'Morris 1.8m Entertainment Unit — Oak': '$100 NZD',
 };
 
 function listedPriceFor(item) {
