@@ -104,6 +104,7 @@
   }
   .offer-row .name { font-weight: 600; }
   .offer-row .amount { color: var(--accent); font-weight: 700; }
+  .amount-vs-listed { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
   .offer-row .meta { color: var(--muted); font-size: 0.82rem; }
   .offer-row .message { flex-basis: 100%; font-size: 0.88rem; color: #45413c; margin-top: 2px; }
   .badge {
@@ -363,7 +364,7 @@ function renderItemGroup(item, offersForItem) {
       ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
       <span class="name">${escapeHtml(o.name || '(no name)')}</span>
       ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
-      ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}</span>` : ''}
+      ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}</span>` : ''}
       <span class="${badgeClass}">${escapeHtml(o.source)}</span>
       <span class="meta">${dateStr}</span>
       ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
