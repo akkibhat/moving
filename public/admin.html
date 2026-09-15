@@ -131,7 +131,7 @@ async function loadOffers() {
   const pw = sessionStorage.getItem(STORAGE_KEY);
   if (!pw) return;
 
-  const res = await fetch('/.netlify/functions/offers', {
+  const res = await fetch('/api/offers', {
     headers: { 'X-Admin-Password': pw },
   });
 
