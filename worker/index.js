@@ -113,6 +113,7 @@ const ITEM_STATUS = {
   'Squier by Fender Bullet Strat': 'Sold',
   'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': 'Pending Sale',
   'Nvidia Shield TV + Remote': 'Sold',
+  'Black & Decker Dustbuster 4.8V': 'Pending Sale',
 };
 
 function statusFor(item) {
