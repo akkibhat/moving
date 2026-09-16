@@ -112,6 +112,14 @@ const ITEM_LISTED_PRICES = {
   'Lenovo ThinkPad X390': '$400 NZD',
   'Magic Bullet Blender + Food Processor': '$25 NZD',
   'AllDock Bamboo Charging Station': '$40 NZD',
+  'Clifford Wooden Bedside Table': '$20 NZD',
+  'Flynn 170cm Computer Desk - Oak': '$80 NZD',
+  'Xoan Wooden Tallboy 4 Drawers - Oak': '$50 NZD',
+  'Rudolf 5 Tier Bookshelf - Oak': '$80 NZD',
+  'Desta Dining Table Rectangle 160x90cm - White + 5 Chairs': '$120 NZD',
+  'ThunderX3 YAMA1 Gaming Ergonomic Chair': '$90 NZD',
+  'Kogan SmarterHome Bladeless Purifier Tower Fan': '$50 NZD',
+  'Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)': '$60 NZD',
 };
 
 function listedPriceFor(item) {
