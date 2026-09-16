@@ -103,6 +103,7 @@ const ITEM_STATUS = {
   'Kogan SmarterHome™ LS16 Robot Vacuum + Auto-Empty Dock': 'Pending Sale',
   'Squier by Fender Bullet Strat': 'Pending Sale',
   'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': 'Pending Sale',
+  'Nvidia Shield TV + Remote': 'Pending Sale',
 };
 
 function statusFor(item) {
