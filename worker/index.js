@@ -90,6 +90,8 @@ const ITEM_LISTED_PRICES = {
   'Kogan Stick Blender + Attachments': '$20 NZD',
   'iGulu S1 Combo — Automatic Home Brewing Machine': '$280 NZD',
   'Lenovo ThinkPad X390': '$400 NZD',
+  'Magic Bullet Blender + Food Processor': '$25 NZD',
+  'AllDock Bamboo Charging Station': '$40 NZD',
 };
 
 function listedPriceFor(item) {
