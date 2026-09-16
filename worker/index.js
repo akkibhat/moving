@@ -122,6 +122,7 @@ const ITEM_LISTED_PRICES = {
   'Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)': '$60 NZD',
   'Double Bed (Inherited, Unbranded)': 'Free',
   'Double Bed + Mattress (Inherited, Unbranded)': '$50 NZD',
+  'Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress': '$220 NZD',
 };
 
 function listedPriceFor(item) {

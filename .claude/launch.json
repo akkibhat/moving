@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nzmovingsale-dev",
+      "runtimeExecutable": "./node_modules/.bin/wrangler",
+      "runtimeArgs": ["dev", "--remote"],
+      "port": 8787
+    }
+  ]
+}
