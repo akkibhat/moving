@@ -184,6 +184,7 @@
   .price-label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
   .price { font-size: 1.15rem; font-weight: 700; color: var(--accent); }
   .per-note { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+  .price-was { font-size: 0.9rem; font-weight: 400; color: var(--muted); text-decoration: line-through; margin-right: 6px; }
   .need-box {
     background: var(--warn-bg);
     border: 1px solid var(--warn-line);
@@ -262,7 +263,7 @@
         <div class="row"><span class="label">New price ref:</span> used units ~US$400–600 overseas</div>
         <div class="price-block">
           <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$350 NZD</div>
+          <div class="price"><span class="price-was">$500 NZD</span>$350 NZD</div>
         </div>
         <button class="offer-btn" onclick="openOfferModal('Pioneer DDJ-SR — Serato DJ Controller')">Make an offer</button>
       </div>
@@ -820,7 +821,7 @@
         <div class="row"><span class="label">New price ref:</span> ~$90–97 NZD new</div>
         <div class="price-block">
           <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$20 NZD</div>
+          <div class="price"><span class="price-was">$30 NZD</span>$20 NZD</div>
         </div>
         <button class="offer-btn" onclick="openOfferModal('Grandstream HT802 — 2-Port VoIP ATA')">Make an offer</button>
       </div>
