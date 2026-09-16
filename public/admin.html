@@ -597,33 +597,70 @@ function renderItemGroup(item, offersForItem) {
   header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${statusSelect}${paidBtn}${pickedUpBtn}</span>`;
   group.appendChild(header);
 
+  // Once an item is Sold and has a recorded winner, the non-winning offers
+  // are just noise Akki no longer needs at a glance — collapse them behind
+  // a toggle, winner row always stays visible. Items with no winner yet
+  // (e.g. Pending Sale, still deciding) always show every offer.
+  const collapseOthers = isSold && !!winner && offersForItem.length > 1;
+  const otherOffers = collapseOthers ? [] : null;
+
   offersForItem.forEach((o) => {
-    const row = document.createElement('div');
-    row.className = 'offer-row' + (o.winner ? ' winner' : '');
-    const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
-    const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
-    // Every non-winning offer gets a "Select as winner" button so Akki can
-    // flip who's buying an item straight from the offer list — the key is
-    // read from data-key rather than inlined into the onclick string, same
-    // reasoning as group.dataset.item above.
-    const selectWinnerBtn = o.winner
-      ? ''
-      : `<button class="paid-btn" data-key="${escapeHtml(o.key)}" onclick="setWinner(this.closest('.item-group').dataset.item, this.dataset.key)">Select as winner</button>`;
-    row.innerHTML = `
-      ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
-      <span class="name">${escapeHtml(o.name || '(no name)')}</span>
-      ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
-      ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}</span>` : ''}
-      <span class="${badgeClass}">${escapeHtml(o.source)}</span>
-      <span class="meta">${dateStr}</span>
-      ${selectWinnerBtn}
-      ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
-      ${o.winnerNote ? `<span class="winner-note">${escapeHtml(o.winnerNote)}</span>` : ''}
-    `;
-    group.appendChild(row);
+    const row = buildOfferRow(o);
+    if (collapseOthers && !o.winner) {
+      otherOffers.push(row);
+    } else {
+      group.appendChild(row);
+    }
   });
 
+  if (collapseOthers && otherOffers.length) {
+    const toggle = document.createElement('button');
+    toggle.className = 'paid-btn unpaid-btn';
+    toggle.style.margin = '10px 16px';
+    toggle.textContent = `Show ${otherOffers.length} other offer${otherOffers.length === 1 ? '' : 's'}`;
+    const othersWrap = document.createElement('div');
+    othersWrap.hidden = true;
+    otherOffers.forEach((row) => othersWrap.appendChild(row));
+    toggle.onclick = () => {
+      othersWrap.hidden = !othersWrap.hidden;
+      toggle.textContent = othersWrap.hidden
+        ? `Show ${otherOffers.length} other offer${otherOffers.length === 1 ? '' : 's'}`
+        : 'Hide other offers';
+    };
+    group.appendChild(toggle);
+    group.appendChild(othersWrap);
+  }
+
   return group;
+}
+
+// Builds a single offer row element — pulled out of renderItemGroup so the
+// collapsed "other offers" section can build rows the same way as the
+// always-visible ones.
+function buildOfferRow(o) {
+  const row = document.createElement('div');
+  row.className = 'offer-row' + (o.winner ? ' winner' : '');
+  const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
+  // Every non-winning offer gets a "Select as winner" button so Akki can
+  // flip who's buying an item straight from the offer list — the key is
+  // read from data-key rather than inlined into the onclick string, same
+  // reasoning as group.dataset.item above.
+  const selectWinnerBtn = o.winner
+    ? ''
+    : `<button class="paid-btn" data-key="${escapeHtml(o.key)}" onclick="setWinner(this.closest('.item-group').dataset.item, this.dataset.key)">Select as winner</button>`;
+  row.innerHTML = `
+    ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
+    <span class="name">${escapeHtml(o.name || '(no name)')}</span>
+    ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
+    ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}</span>` : ''}
+    <span class="${badgeClass}">${escapeHtml(o.source)}</span>
+    <span class="meta">${dateStr}</span>
+    ${selectWinnerBtn}
+    ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
+    ${o.winnerNote ? `<span class="winner-note">${escapeHtml(o.winnerNote)}</span>` : ''}
+  `;
+  return row;
 }
 
 function escapeHtml(str) {
