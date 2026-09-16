@@ -142,6 +142,20 @@
     cursor: pointer;
   }
   .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  /* Top-level view switch (Offers vs Page Views) — visually distinct (square-ish,
+     bigger) from the status pills below it so it reads as a different tier of nav. */
+  .view-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+  .view-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 8px 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .view-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
   .paid-btn {
     background: var(--card-bg);
     border: 1px solid var(--accent);
@@ -192,13 +206,16 @@
     </div>
     <button class="refresh-btn" onclick="refreshCurrentTab()">Refresh</button>
   </div>
-  <div class="tabs">
+  <div class="view-tabs">
+    <button class="view-btn active" data-view="offers" onclick="switchView('offers')">Offers</button>
+    <button class="view-btn" data-view="visits" onclick="switchView('visits')">Page Views</button>
+  </div>
+  <div class="tabs" id="statusTabs">
     <button class="tab-btn active" data-tab="Pending Sale" onclick="switchTab('Pending Sale')">Pending Sale</button>
     <button class="tab-btn" data-tab="Sold - Not Paid" onclick="switchTab('Sold - Not Paid')">Sold - Not Paid</button>
     <button class="tab-btn" data-tab="Sold - Paid" onclick="switchTab('Sold - Paid')">Sold - Paid</button>
     <button class="tab-btn" data-tab="Picked Up" onclick="switchTab('Picked Up')">Picked Up</button>
     <button class="tab-btn" data-tab="Available" onclick="switchTab('Available')">Available</button>
-    <button class="tab-btn" data-tab="visits" onclick="switchTab('visits')">Page Views</button>
   </div>
   <div class="total-revenue" id="totalRevenue" hidden></div>
   <div id="groups"></div>
@@ -334,29 +351,46 @@ const TAB_INFO = {
   'Available': { title: 'Available', sub: 'Still listed and open to offers.' },
 };
 
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
-  document.getElementById('groups').hidden = tab === 'visits';
-  document.getElementById('totalRevenue').hidden = tab === 'visits';
-  document.getElementById('visitsWrap').hidden = tab !== 'visits';
+// Which top-level view is showing: 'offers' (the 5 status pills + revenue)
+// or 'visits' (the page-views table). Independent of currentTab, which only
+// tracks which status pill is selected within the offers view.
+let currentView = 'offers';
 
-  if (tab === 'visits') {
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  document.getElementById('statusTabs').hidden = view === 'visits';
+  document.getElementById('groups').hidden = view === 'visits';
+  document.getElementById('totalRevenue').hidden = view === 'visits';
+  document.getElementById('visitsWrap').hidden = view !== 'visits';
+
+  if (view === 'visits') {
     document.getElementById('pageTitle').textContent = 'Page views';
-    document.getElementById('pageSub').textContent = 'Most recent 500 visits to the public listing page (kept for 90 days).';
+    document.getElementById('pageSub').textContent = 'All visits to the public listing page (kept for 90 days).';
     loadVisits();
   } else {
-    document.getElementById('pageTitle').textContent = TAB_INFO[tab].title;
-    document.getElementById('pageSub').textContent = TAB_INFO[tab].sub;
+    document.getElementById('pageTitle').textContent = TAB_INFO[currentTab].title;
+    document.getElementById('pageSub').textContent = TAB_INFO[currentTab].sub;
     if (lastOffers.length) renderGroups(lastOffers);
     else loadOffers();
   }
 }
 
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.getElementById('pageTitle').textContent = TAB_INFO[tab].title;
+  document.getElementById('pageSub').textContent = TAB_INFO[tab].sub;
+  if (lastOffers.length) renderGroups(lastOffers);
+  else loadOffers();
+}
+
 function refreshCurrentTab() {
-  if (currentTab === 'visits') loadVisits();
+  if (currentView === 'visits') loadVisits();
   else loadOffers();
 }
 
@@ -525,7 +559,7 @@ function renderTotalRevenue(byItem, itemNames) {
     <div>Money made so far: <b>$${totalMade.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price${shippingNote}</span></div>
     <div>Money received: <b>$${totalReceived.toLocaleString('en-NZ')} NZD</b><span class="total-note">${paidCount} of ${soldCount} sold item${soldCount === 1 ? '' : 's'} marked paid</span></div>
   `;
-  el.hidden = currentTab === 'visits';
+  el.hidden = currentView === 'visits';
 }
 
 function renderItemGroup(item, offersForItem) {

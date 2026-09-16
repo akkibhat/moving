@@ -491,24 +491,22 @@ async function handleGetVisits(request, env) {
     return jsonResponse({ error: 'Unauthorized' }, 401);
   }
 
-  // Most recent 500 visits — this list can grow fast, so cap it rather than
-  // pulling every visit in the 90-day retention window on every request.
+  // Every visit still in the 90-day retention window (VISITS_KV entries
+  // expire via expirationTtl, so this list is naturally bounded — no need
+  // to cap it further here).
   const allKeys = [];
   let cursor;
   do {
     const list = await env.VISITS_KV.list({ prefix: 'visit:', cursor, limit: 1000 });
     allKeys.push(...list.keys);
     cursor = list.cursor;
-    if (allKeys.length >= 500) break;
   } while (cursor);
 
   // Keys are ISO-timestamp-prefixed, so sorting the keys themselves (newest
-  // first) avoids fetching every value just to sort — then only fetch the
-  // most recent 500.
+  // first) avoids fetching every value just to sort.
   allKeys.sort((a, b) => (a.name < b.name ? 1 : -1));
-  const recentKeys = allKeys.slice(0, 500);
 
-  const values = await Promise.all(recentKeys.map((key) => env.VISITS_KV.get(key.name)));
+  const values = await Promise.all(allKeys.map((key) => env.VISITS_KV.get(key.name)));
   const visits = values.filter(Boolean).map((v) => JSON.parse(v));
 
   return jsonResponse(visits);
