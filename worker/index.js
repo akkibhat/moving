@@ -81,6 +81,15 @@ const ITEM_LISTED_PRICES = {
   'Nikko Open-Face Helmet': '$40 NZD',
   'Squier by Fender Bullet Strat': '$150 NZD ($200 w/ cable)',
   'Logitech Harmony Elite (Hub + Premium Touch Remote) + 2× IR Blasters': '$100 NZD',
+  'Karcher SE 3-18 Ultra Clean Battery Carpet Cleaner': '$200 NZD',
+  'Texas Hold\'em Poker Set + Card Shuffler': '$10 NZD',
+  'Ooni Karu 16 Multi-Fuel Pizza Oven': '$350 NZD',
+  'Weber Family Q 3200 Gas BBQ': '$300 NZD',
+  'Pit Boss Vertical Pellet Smoker': '$400 NZD',
+  'Sistema Nest It Meal Prep Containers (5-Pack)': '$10 NZD',
+  'Kogan Stick Blender + Attachments': '$20 NZD',
+  'iGulu S1 Combo — Automatic Home Brewing Machine': '$280 NZD',
+  'Lenovo ThinkPad X390': '$400 NZD',
 };
 
 function listedPriceFor(item) {
