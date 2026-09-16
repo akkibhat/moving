@@ -186,6 +186,7 @@
     <button class="tab-btn active" data-tab="Pending Sale" onclick="switchTab('Pending Sale')">Pending Sale</button>
     <button class="tab-btn" data-tab="Sold - Not Paid" onclick="switchTab('Sold - Not Paid')">Sold - Not Paid</button>
     <button class="tab-btn" data-tab="Sold - Paid" onclick="switchTab('Sold - Paid')">Sold - Paid</button>
+    <button class="tab-btn" data-tab="Picked Up" onclick="switchTab('Picked Up')">Picked Up</button>
     <button class="tab-btn" data-tab="Available" onclick="switchTab('Available')">Available</button>
     <button class="tab-btn" data-tab="visits" onclick="switchTab('visits')">Page Views</button>
   </div>
@@ -235,22 +236,25 @@ async function loadOffers() {
   renderGroups(lastOffers);
 }
 
-// Flags a sold item's winning offer as paid/unpaid, then re-renders from the
-// already-loaded data (no need to refetch — we know exactly what changed).
-async function markPaid(key, paid) {
+// Flips one boolean flag (paid or pickedUp) on a sold item's winning offer,
+// then re-renders from the already-loaded data (no need to refetch — we
+// know exactly what changed).
+async function setOfferFlag(key, field, value) {
   const pw = sessionStorage.getItem(STORAGE_KEY);
   if (!pw) return;
 
-  await fetch('/api/mark-paid', {
+  await fetch('/api/set-offer-flag', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
-    body: JSON.stringify({ key, paid }),
+    body: JSON.stringify({ key, field, value }),
   });
 
   const offer = lastOffers.find((o) => o.key === key);
-  if (offer) offer.paid = paid;
+  if (offer) offer[field] = value;
   renderGroups(lastOffers);
 }
+function markPaid(key, paid) { setOfferFlag(key, 'paid', paid); }
+function markPickedUp(key, pickedUp) { setOfferFlag(key, 'pickedUp', pickedUp); }
 
 async function loadVisits() {
   const pw = sessionStorage.getItem(STORAGE_KEY);
@@ -278,8 +282,9 @@ async function loadVisits() {
 // The 4 status tabs, each with its own title/subtitle for the page header.
 const TAB_INFO = {
   'Pending Sale': { title: 'Pending Sale', sub: 'Items with a claimed buyer, waiting on pickup/payment to finish.' },
-  'Sold - Not Paid': { title: 'Sold — Not Paid', sub: "Sold and handed over (or ready to), but payment hasn't been marked received yet." },
-  'Sold - Paid': { title: 'Sold — Paid', sub: 'Fully done — sold and payment received.' },
+  'Sold - Not Paid': { title: 'Sold — Not Paid', sub: "Sold, but payment hasn't been marked received yet." },
+  'Sold - Paid': { title: 'Sold — Paid', sub: "Payment received, but not yet marked picked up." },
+  'Picked Up': { title: 'Picked Up', sub: 'Fully done — sold, paid, and collected.' },
   'Available': { title: 'Available', sub: 'Still listed and open to offers.' },
 };
 
@@ -379,13 +384,20 @@ function isPaid(offersForItem) {
   const winner = winnerFor(offersForItem);
   return !!(winner && winner.paid);
 }
+function isPickedUp(offersForItem) {
+  const winner = winnerFor(offersForItem);
+  return !!(winner && winner.pickedUp);
+}
 
-// Which status tab an item belongs in. Sold items split into two tabs based
-// on the winner offer's `paid` flag — everything else maps 1:1 to its
-// itemStatus.
+// Which status tab an item belongs in. Sold items move through 3 tabs as
+// the winner offer's `paid` and `pickedUp` flags get set — picked up wins
+// over not-yet-paid (someone can grab it and pay on the spot, or pay first
+// and collect later; either way, once it's picked up it's fully done and
+// that's the tab that matters). Everything else maps 1:1 to its itemStatus.
 function tabFor(offersForItem) {
   const status = offersForItem[0].itemStatus || 'Available';
   if (status !== 'Sold') return status;
+  if (isPickedUp(offersForItem)) return 'Picked Up';
   return isPaid(offersForItem) ? 'Sold - Paid' : 'Sold - Not Paid';
 }
 
@@ -479,15 +491,20 @@ function renderItemGroup(item, offersForItem) {
   const listedPrice = offersForItem[0].listedPrice;
   const winner = winnerFor(offersForItem);
   const isSold = (offersForItem[0].itemStatus || 'Available') === 'Sold';
-  // Only a Sold item with a recorded winner has anything to mark paid/unpaid
-  // — a sold item with no winner offer (e.g. a walk-up sale never logged)
-  // has no record to flip.
+  // Only a Sold item with a recorded winner has anything to mark paid/picked
+  // up — a sold item with no winner offer (e.g. a walk-up sale never
+  // logged) has no record to flip.
   const paidBtn = isSold && winner
     ? isPaid(offersForItem)
       ? `<button class="paid-btn unpaid-btn" onclick="markPaid('${winner.key}', false)">Mark as unpaid</button>`
       : `<button class="paid-btn" onclick="markPaid('${winner.key}', true)">Mark as paid</button>`
     : '';
-  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${paidBtn}</span>`;
+  const pickedUpBtn = isSold && winner
+    ? isPickedUp(offersForItem)
+      ? `<button class="paid-btn unpaid-btn" onclick="markPickedUp('${winner.key}', false)">Mark as not picked up</button>`
+      : `<button class="paid-btn" onclick="markPickedUp('${winner.key}', true)">Mark as picked up</button>`
+    : '';
+  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${paidBtn}${pickedUpBtn}</span>`;
   group.appendChild(header);
 
   offersForItem.forEach((o) => {

@@ -12,9 +12,10 @@
 //   GET  /api/visits          - password-gated: returns recent visit logs
 //                                (IP, country, referrer, user-agent) for the
 //                                private admin.html page
-//   POST /api/mark-paid       - password-gated: flips the `paid` flag on one
-//                                stored offer record (admin.html's "Mark as
-//                                paid" / "Mark as unpaid" buttons)
+//   POST /api/set-offer-flag  - password-gated: flips one boolean flag
+//                                (paid or pickedUp) on one stored offer
+//                                record (admin.html's Mark as paid/picked up
+//                                buttons)
 //
 // Every request for the public listing page ("/") is also logged into
 // VISITS_KV, fire-and-forget via ctx.waitUntil so it never slows down the
@@ -141,8 +142,8 @@ export default {
     if (url.pathname === '/api/visits' && request.method === 'GET') {
       return handleGetVisits(request, env);
     }
-    if (url.pathname === '/api/mark-paid' && request.method === 'POST') {
-      return handleMarkPaid(request, env);
+    if (url.pathname === '/api/set-offer-flag' && request.method === 'POST') {
+      return handleSetOfferFlag(request, env);
     }
 
     // Log a visit to the public listing page itself — not admin.html (that's
@@ -299,10 +300,16 @@ async function handleGetOffers(request, env) {
   return jsonResponse(withPrices);
 }
 
-// Flips the `paid` flag on a single stored offer record — used by the admin
-// page's "Mark as paid" / "Mark as unpaid" buttons on sold items. Takes the
-// offer's KV key (as returned by /api/offers) and the new paid value.
-async function handleMarkPaid(request, env) {
+// Fields the admin page is allowed to flip on an offer record via
+// /api/set-offer-flag. Kept as an allow-list so the endpoint can't be used
+// to overwrite arbitrary fields (item, offerAmount, etc).
+const SETTABLE_OFFER_FLAGS = ['paid', 'pickedUp'];
+
+// Flips one boolean flag (paid or pickedUp) on a single stored offer record
+// — used by the admin page's "Mark as paid"/"Mark as picked up" buttons (and
+// their "unmark" equivalents) on sold items. Takes the offer's KV key (as
+// returned by /api/offers), which flag to set, and the new value.
+async function handleSetOfferFlag(request, env) {
   const suppliedPassword = request.headers.get('x-admin-password');
   if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
     return jsonResponse({ error: 'Unauthorized' }, 401);
@@ -315,9 +322,9 @@ async function handleMarkPaid(request, env) {
     return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
-  const { key, paid } = payload;
-  if (!key) {
-    return jsonResponse({ error: 'Missing key' }, 400);
+  const { key, field, value } = payload;
+  if (!key || !SETTABLE_OFFER_FLAGS.includes(field)) {
+    return jsonResponse({ error: 'Missing key or invalid field' }, 400);
   }
 
   const existing = await env.OFFERS_KV.get(key);
@@ -326,7 +333,7 @@ async function handleMarkPaid(request, env) {
   }
 
   const record = JSON.parse(existing);
-  record.paid = !!paid;
+  record[field] = !!value;
   await env.OFFERS_KV.put(key, JSON.stringify(record));
 
   return jsonResponse({ ok: true });
