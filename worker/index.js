@@ -36,7 +36,7 @@ const SENDER_EMAIL = 'offers@move.pi.co.nz';
 // emails and the admin view can show "asking $X" next to whatever the buyer
 // actually offered. Update this if a listed price on the site changes.
 const ITEM_LISTED_PRICES = {
-  'Grandstream HT802 — 2-Port VoIP ATA': '$30 NZD',
+  'Grandstream HT802 — 2-Port VoIP ATA': '$20 NZD',
   'MikroTik RouterBOARD RBM33G': '$50 NZD',
   'TP-Link Powerline Adapter Pair — AV1300 (Pass-Through)': '$100 NZD',
   'TP-Link Powerline Adapter Pair — AV2000 (Pass-Through)': '$130 NZD',
