@@ -1597,5 +1597,89 @@ document.querySelectorAll('.gallery.multi').forEach(g => {
   g.querySelectorAll('.dot')[0]?.classList.add('active');
 });
 </script>
+
+<script>
+// Patches a single card's DOM to match a status set live via the admin
+// page — everything the static HTML would normally encode for that status
+// (card class, the badge on the photo, the offer button) gets rewritten.
+// itemName is captured in this closure rather than baked into an inline
+// onclick string, since item names can contain apostrophes (e.g.
+// "Texas Hold'em...") that would otherwise break a naive onclick="fn('...')".
+function applyStatusOverride(card, status, itemName) {
+  card.dataset.status = status;
+  card.classList.remove('sold', 'pending');
+
+  const gallery = card.querySelector('.gallery');
+  let badge = gallery.querySelector('.status-badge');
+  const btn = card.querySelector('.offer-btn');
+
+  if (status === 'Available') {
+    if (badge) badge.remove();
+    btn.disabled = false;
+    btn.removeAttribute('title');
+    btn.textContent = 'Make an offer';
+    btn.onclick = () => openOfferModal(itemName);
+  } else {
+    card.classList.add(status === 'Sold' ? 'sold' : 'pending');
+    const label = status === 'Sold' ? 'Sold' : 'Pending sale';
+    if (!badge) {
+      badge = document.createElement('span');
+      gallery.insertBefore(badge, gallery.firstChild);
+    }
+    badge.className = 'status-badge' + (status === 'Sold' ? ' sold-badge' : '');
+    badge.textContent = label;
+    btn.disabled = true;
+    btn.title = label;
+    btn.textContent = label;
+    btn.onclick = null;
+  }
+}
+
+// The "N Items Listed / Pending Sale / Sold" summary bar was baked in at
+// deploy time — after a live status override moves a card between
+// categories, recompute all three from what's actually on the page now.
+function recomputeSummaryCounts() {
+  const cards = document.querySelectorAll('.card');
+  let pending = 0;
+  let sold = 0;
+  cards.forEach((c) => {
+    if (c.dataset.status === 'Pending Sale') pending += 1;
+    else if (c.dataset.status === 'Sold') sold += 1;
+  });
+  const setCount = (status, n) => {
+    const stat = document.querySelector(`.summary-stat[data-status="${status}"] b`);
+    if (stat) stat.textContent = n;
+  };
+  setCount('all', cards.length);
+  setCount('Pending Sale', pending);
+  setCount('Sold', sold);
+}
+
+// On every page load, pick up any status changes made via the admin page
+// since this HTML was last deployed. Only items with a live override come
+// back, so a quiet day (nothing changed) is a near-empty response and this
+// does effectively nothing. Fails silently — if the fetch doesn't work for
+// any reason, the statically-rendered status from the last deploy is still
+// correct, just possibly a little stale.
+fetch('/api/item-status')
+  .then((res) => (res.ok ? res.json() : {}))
+  .then((overrides) => {
+    if (!overrides || !Object.keys(overrides).length) return;
+    let changed = false;
+    document.querySelectorAll('.card').forEach((card) => {
+      const h3 = card.querySelector('h3');
+      const itemName = h3 ? h3.textContent : '';
+      if (Object.prototype.hasOwnProperty.call(overrides, itemName) && overrides[itemName] !== card.dataset.status) {
+        applyStatusOverride(card, overrides[itemName], itemName);
+        changed = true;
+      }
+    });
+    if (changed) {
+      recomputeSummaryCounts();
+      applyFilters();
+    }
+  })
+  .catch(() => {});
+</script>
 </body>
 </html>

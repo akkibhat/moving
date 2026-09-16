@@ -16,6 +16,22 @@
 //                                (paid or pickedUp) on one stored offer
 //                                record (admin.html's Mark as paid/picked up
 //                                buttons)
+//   GET  /api/item-status     - public: returns live status overrides set
+//                                via admin.html, as { itemName: status }.
+//                                Only items changed since their hardcoded
+//                                ITEM_STATUS value are included — the public
+//                                page fetches this on load and patches its
+//                                already-rendered cards, so a status change
+//                                in admin shows up on the live site with no
+//                                code edit or redeploy needed.
+//   POST /api/set-item-status - password-gated: sets an item's live status
+//                                (Available / Pending Sale / Sold) in KV.
+//                                This is what admin.html's per-item status
+//                                dropdown calls.
+//   POST /api/set-winner      - password-gated: marks one specific offer as
+//                                the winning offer for its item (and clears
+//                                the winner flag off every other offer on
+//                                that same item, since only one can win).
 //
 // Every request for the public listing page ("/") is also logged into
 // VISITS_KV, fire-and-forget via ctx.waitUntil so it never slows down the
@@ -122,8 +138,27 @@ const ITEM_STATUS = {
   'Black & Decker Dustbuster 4.8V': 'Pending Sale',
 };
 
-function statusFor(item) {
+// The 3 statuses an item can be in. Used to validate /api/set-item-status
+// input and to know what counts as "changed from the hardcoded default"
+// when deciding what /api/item-status needs to send the public page.
+const VALID_ITEM_STATUSES = ['Available', 'Pending Sale', 'Sold'];
+
+// Hardcoded fallback, unaware of any live override — only used as the
+// baseline that a KV override is compared against (see handleGetItemStatus)
+// and as what a fresh page load without JS would still show correctly.
+function hardcodedStatusFor(item) {
   return ITEM_STATUS[item] || 'Available';
+}
+
+// The item's current status, checking the live KV override first (set via
+// admin.html's status dropdown) and falling back to the hardcoded table.
+// This is what actually gets shown in admin — the public page instead
+// fetches /api/item-status itself and patches its static HTML client-side,
+// since it's served straight from the assets binding rather than run
+// through this Worker script.
+async function statusFor(item, env) {
+  const override = await env.OFFERS_KV.get(`status:${item}`);
+  return override || hardcodedStatusFor(item);
 }
 
 export default {
@@ -144,6 +179,15 @@ export default {
     }
     if (url.pathname === '/api/set-offer-flag' && request.method === 'POST') {
       return handleSetOfferFlag(request, env);
+    }
+    if (url.pathname === '/api/item-status' && request.method === 'GET') {
+      return handleGetItemStatus(request, env);
+    }
+    if (url.pathname === '/api/set-item-status' && request.method === 'POST') {
+      return handleSetItemStatus(request, env);
+    }
+    if (url.pathname === '/api/set-winner' && request.method === 'POST') {
+      return handleSetWinner(request, env);
     }
 
     // Log a visit to the public listing page itself — not admin.html (that's
@@ -262,14 +306,11 @@ async function sendNotificationEmail(env, record) {
   });
 }
 
-async function handleGetOffers(request, env) {
-  const suppliedPassword =
-    request.headers.get('x-admin-password') || new URL(request.url).searchParams.get('password');
-
-  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
-    return jsonResponse({ error: 'Unauthorized' }, 401);
-  }
-
+// Fetches every stored offer record from KV, each tagged with its own KV
+// key (so callers can write back to the exact record they read). Shared by
+// handleGetOffers and handleSetWinner rather than duplicated, since both
+// need "every offer, with its key" as a starting point.
+async function getAllOffers(env) {
   // List all keys first (paginating if there are ever more than one page),
   // then fetch every value in parallel rather than one at a time — with a
   // few dozen offers, sequential gets were adding a noticeable delay before
@@ -283,19 +324,31 @@ async function handleGetOffers(request, env) {
   } while (cursor);
 
   const values = await Promise.all(allKeys.map((key) => env.OFFERS_KV.get(key.name)));
-  const offers = allKeys
+  return allKeys
     .map((key, i) => (values[i] ? { key: key.name, ...JSON.parse(values[i]) } : null))
     .filter(Boolean);
+}
 
+async function handleGetOffers(request, env) {
+  const suppliedPassword =
+    request.headers.get('x-admin-password') || new URL(request.url).searchParams.get('password');
+
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  const offers = await getAllOffers(env);
   offers.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   // Attach the current listed price/status at read time so every offer (old
   // and new) shows them, without needing to backfill stored records.
-  const withPrices = offers.map((o) => ({
-    ...o,
-    listedPrice: listedPriceFor(o.item),
-    itemStatus: statusFor(o.item),
-  }));
+  const withPrices = await Promise.all(
+    offers.map(async (o) => ({
+      ...o,
+      listedPrice: listedPriceFor(o.item),
+      itemStatus: await statusFor(o.item, env),
+    }))
+  );
 
   return jsonResponse(withPrices);
 }
@@ -335,6 +388,86 @@ async function handleSetOfferFlag(request, env) {
   const record = JSON.parse(existing);
   record[field] = !!value;
   await env.OFFERS_KV.put(key, JSON.stringify(record));
+
+  return jsonResponse({ ok: true });
+}
+
+// Public (no password) — the live listing page fetches this on every load
+// to patch its statically-rendered cards with anything changed via admin
+// since the last deploy. Only items with a KV override are included, so a
+// quiet page (nothing changed today) gets back an almost-empty object.
+async function handleGetItemStatus(request, env) {
+  const list = await env.OFFERS_KV.list({ prefix: 'status:' });
+  const values = await Promise.all(list.keys.map((k) => env.OFFERS_KV.get(k.name)));
+
+  const overrides = {};
+  list.keys.forEach((k, i) => {
+    const item = k.name.slice('status:'.length);
+    if (values[i]) overrides[item] = values[i];
+  });
+
+  return jsonResponse(overrides);
+}
+
+// Sets an item's live status. This is the KV override that both statusFor()
+// (used by the admin offers view) and the public page's /api/item-status
+// fetch read from — so one call here updates admin and the live site alike,
+// with no code change or redeploy.
+async function handleSetItemStatus(request, env) {
+  const suppliedPassword = request.headers.get('x-admin-password');
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const { item, status } = payload;
+  if (!item || !VALID_ITEM_STATUSES.includes(status)) {
+    return jsonResponse({ error: 'Missing item or invalid status' }, 400);
+  }
+
+  await env.OFFERS_KV.put(`status:${item}`, status);
+  return jsonResponse({ ok: true });
+}
+
+// Marks one offer as the winning offer for its item, and un-marks every
+// other offer on that same item — only one buyer can be "selected" at a
+// time. Used by admin.html's "Select as winner" button on an offer row.
+async function handleSetWinner(request, env) {
+  const suppliedPassword = request.headers.get('x-admin-password');
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const { item, key } = payload;
+  if (!item || !key) {
+    return jsonResponse({ error: 'Missing item or key' }, 400);
+  }
+
+  const offers = await getAllOffers(env);
+  const forThisItem = offers.filter((o) => o.item === item);
+
+  await Promise.all(
+    forThisItem.map((o) => {
+      const shouldBeWinner = o.key === key;
+      if (!!o.winner === shouldBeWinner) return null; // already correct, skip the write
+      const { key: kvKey, ...record } = o;
+      record.winner = shouldBeWinner;
+      return env.OFFERS_KV.put(kvKey, JSON.stringify(record));
+    })
+  );
 
   return jsonResponse({ ok: true });
 }

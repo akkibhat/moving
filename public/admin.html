@@ -155,6 +155,16 @@
   }
   .paid-btn:hover { background: var(--accent-soft); }
   .paid-btn.unpaid-btn { border-color: var(--muted); color: var(--muted); }
+  .status-select {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+  }
   table.visits { width: 100%; border-collapse: collapse; background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
   table.visits th, table.visits td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
   table.visits th { background: var(--accent-soft); font-weight: 700; }
@@ -255,6 +265,42 @@ async function setOfferFlag(key, field, value) {
 }
 function markPaid(key, paid) { setOfferFlag(key, 'paid', paid); }
 function markPickedUp(key, pickedUp) { setOfferFlag(key, 'pickedUp', pickedUp); }
+
+// Mirrors the Worker's VALID_ITEM_STATUSES — used to build the status
+// dropdown's options in the order they naturally progress.
+const VALID_ITEM_STATUSES = ['Available', 'Pending Sale', 'Sold'];
+
+// Changes an item's live status (Available/Pending Sale/Sold). This also
+// updates what the public site shows, via /api/item-status — no redeploy.
+async function setItemStatus(item, status) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-item-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ item, status }),
+  });
+
+  lastOffers.forEach((o) => { if (o.item === item) o.itemStatus = status; });
+  renderGroups(lastOffers);
+}
+
+// Marks one offer as the winning offer for its item, un-marking any
+// previous winner on that same item, then re-renders.
+async function setWinner(item, key) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-winner', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ item, key }),
+  });
+
+  lastOffers.forEach((o) => { if (o.item === item) o.winner = o.key === key; });
+  renderGroups(lastOffers);
+}
 
 async function loadVisits() {
   const pw = sessionStorage.getItem(STORAGE_KEY);
@@ -485,12 +531,18 @@ function renderTotalRevenue(byItem, itemNames) {
 function renderItemGroup(item, offersForItem) {
   const group = document.createElement('div');
   group.className = 'item-group';
+  // Stashed here (rather than inlined into onclick strings) so every button
+  // below can find its item name via this.closest('.item-group').dataset.item
+  // — item names can contain apostrophes (e.g. "Texas Hold'em..."), which
+  // would break a naive onclick="fn('${item}')" string.
+  group.dataset.item = item;
 
   const header = document.createElement('div');
   header.className = 'item-header';
   const listedPrice = offersForItem[0].listedPrice;
   const winner = winnerFor(offersForItem);
-  const isSold = (offersForItem[0].itemStatus || 'Available') === 'Sold';
+  const currentStatus = offersForItem[0].itemStatus || 'Available';
+  const isSold = currentStatus === 'Sold';
   // Only a Sold item with a recorded winner has anything to mark paid/picked
   // up — a sold item with no winner offer (e.g. a walk-up sale never
   // logged) has no record to flip.
@@ -504,7 +556,11 @@ function renderItemGroup(item, offersForItem) {
       ? `<button class="paid-btn unpaid-btn" onclick="markPickedUp('${winner.key}', false)">Mark as not picked up</button>`
       : `<button class="paid-btn" onclick="markPickedUp('${winner.key}', true)">Mark as picked up</button>`
     : '';
-  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${paidBtn}${pickedUpBtn}</span>`;
+  const statusOptions = VALID_ITEM_STATUSES
+    .map((s) => `<option value="${escapeHtml(s)}"${s === currentStatus ? ' selected' : ''}>${escapeHtml(s)}</option>`)
+    .join('');
+  const statusSelect = `<select class="status-select" onchange="setItemStatus(this.closest('.item-group').dataset.item, this.value)">${statusOptions}</select>`;
+  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${statusSelect}${paidBtn}${pickedUpBtn}</span>`;
   group.appendChild(header);
 
   offersForItem.forEach((o) => {
@@ -512,6 +568,13 @@ function renderItemGroup(item, offersForItem) {
     row.className = 'offer-row' + (o.winner ? ' winner' : '');
     const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
     const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
+    // Every non-winning offer gets a "Select as winner" button so Akki can
+    // flip who's buying an item straight from the offer list — the key is
+    // read from data-key rather than inlined into the onclick string, same
+    // reasoning as group.dataset.item above.
+    const selectWinnerBtn = o.winner
+      ? ''
+      : `<button class="paid-btn" data-key="${escapeHtml(o.key)}" onclick="setWinner(this.closest('.item-group').dataset.item, this.dataset.key)">Select as winner</button>`;
     row.innerHTML = `
       ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
       <span class="name">${escapeHtml(o.name || '(no name)')}</span>
@@ -519,6 +582,7 @@ function renderItemGroup(item, offersForItem) {
       ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}</span>` : ''}
       <span class="${badgeClass}">${escapeHtml(o.source)}</span>
       <span class="meta">${dateStr}</span>
+      ${selectWinnerBtn}
       ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
       ${o.winnerNote ? `<span class="winner-note">${escapeHtml(o.winnerNote)}</span>` : ''}
     `;
