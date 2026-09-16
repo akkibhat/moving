@@ -120,8 +120,8 @@ const ITEM_LISTED_PRICES = {
   'ThunderX3 YAMA1 Gaming Ergonomic Chair': '$90 NZD',
   'Kogan SmarterHome Bladeless Purifier Tower Fan': '$50 NZD',
   'Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)': '$60 NZD',
-  'Double Bed (Inherited, Unbranded)': 'Free',
-  'Double Bed + Mattress (Inherited, Unbranded)': '$50 NZD',
+  'Double Bed': 'Free',
+  'Double Bed + Mattress': '$50 NZD',
   'Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress': '$220 NZD',
 };
 
