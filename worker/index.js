@@ -12,6 +12,9 @@
 //   GET  /api/visits          - password-gated: returns recent visit logs
 //                                (IP, country, referrer, user-agent) for the
 //                                private admin.html page
+//   POST /api/mark-paid       - password-gated: flips the `paid` flag on one
+//                                stored offer record (admin.html's "Mark as
+//                                paid" / "Mark as unpaid" buttons)
 //
 // Every request for the public listing page ("/") is also logged into
 // VISITS_KV, fire-and-forget via ctx.waitUntil so it never slows down the
@@ -137,6 +140,9 @@ export default {
     }
     if (url.pathname === '/api/visits' && request.method === 'GET') {
       return handleGetVisits(request, env);
+    }
+    if (url.pathname === '/api/mark-paid' && request.method === 'POST') {
+      return handleMarkPaid(request, env);
     }
 
     // Log a visit to the public listing page itself — not admin.html (that's
@@ -291,6 +297,39 @@ async function handleGetOffers(request, env) {
   }));
 
   return jsonResponse(withPrices);
+}
+
+// Flips the `paid` flag on a single stored offer record — used by the admin
+// page's "Mark as paid" / "Mark as unpaid" buttons on sold items. Takes the
+// offer's KV key (as returned by /api/offers) and the new paid value.
+async function handleMarkPaid(request, env) {
+  const suppliedPassword = request.headers.get('x-admin-password');
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const { key, paid } = payload;
+  if (!key) {
+    return jsonResponse({ error: 'Missing key' }, 400);
+  }
+
+  const existing = await env.OFFERS_KV.get(key);
+  if (!existing) {
+    return jsonResponse({ error: 'Offer not found' }, 404);
+  }
+
+  const record = JSON.parse(existing);
+  record.paid = !!paid;
+  await env.OFFERS_KV.put(key, JSON.stringify(record));
+
+  return jsonResponse({ ok: true });
 }
 
 async function handleGetVisits(request, env) {
