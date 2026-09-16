@@ -373,6 +373,7 @@ function renderTotalRevenue(byItem, itemNames) {
   const el = document.getElementById('totalRevenue');
   let total = 0;
   let soldCount = 0;
+  let shippingCosts = 0;
 
   itemNames.forEach((item) => {
     const offersForItem = byItem[item];
@@ -382,7 +383,10 @@ function renderTotalRevenue(byItem, itemNames) {
     const winnerOffer = offersForItem.find((o) => o.winner && parseMoney(o.offerAmount) !== null);
     const amount = winnerOffer ? parseMoney(winnerOffer.offerAmount) : parseMoney(offersForItem[0].listedPrice);
     total += amount || 0;
+    if (winnerOffer && winnerOffer.shippingCost) shippingCosts += parseMoney(winnerOffer.shippingCost) || 0;
   });
+
+  total -= shippingCosts;
 
   if (!soldCount) {
     el.innerHTML = '';
@@ -390,7 +394,8 @@ function renderTotalRevenue(byItem, itemNames) {
     return;
   }
 
-  el.innerHTML = `Total made so far: <b>$${total.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price</span>`;
+  const shippingNote = shippingCosts ? ` (after $${shippingCosts.toLocaleString('en-NZ')} courier costs absorbed)` : '';
+  el.innerHTML = `Total made so far: <b>$${total.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price${shippingNote}</span>`;
   el.hidden = currentTab !== 'offers';
 }
 
