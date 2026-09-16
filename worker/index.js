@@ -82,7 +82,7 @@ const ITEM_LISTED_PRICES = {
   'Wacom Intuos (Bluetooth) — CTL-4100WL Drawing Tablet': '$30 NZD',
   'Ozito PXC 18V Drill + LED Worklight + Battery + Charger': '$60 NZD',
   'PS4 DualShock 4 Controllers + Charging Dock': '$40 NZD',
-  'PlayStation 3 (Slim)': '$100 NZD',
+  'PlayStation 3 (Slim)': '$50 NZD',
   'TCL 55C635 4K QLED Google TV': '$450 NZD',
   'Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker': '$100 NZD',
   'Assorted Harry Potter Wands + Owl Holder': '$20 NZD',
