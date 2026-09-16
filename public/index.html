@@ -248,8 +248,120 @@
     <button class="summary-stat active" data-status="all" onclick="filterStatus(this)"><b>67</b> Items Listed</button><button class="summary-stat" data-status="Pending Sale" onclick="filterStatus(this)"><b>4</b> Items Pending Sale</button><button class="summary-stat" data-status="Sold" onclick="filterStatus(this)"><b>9</b> Items Sold</button>
   </div>
 </header>
-<div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (67)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (8)</button><button class="filter-btn" data-cat="Computers & Accessories" onclick="filterCat(this)">Computers & Accessories (9)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (4)</button><button class="filter-btn" data-cat="Kitchen" onclick="filterCat(this)">Kitchen (8)</button><button class="filter-btn" data-cat="Collectibles" onclick="filterCat(this)">Collectibles (1)</button><button class="filter-btn" data-cat="Home" onclick="filterCat(this)">Home (8)</button><button class="filter-btn" data-cat="Furniture" onclick="filterCat(this)">Furniture (6)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (8)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="Other" onclick="filterCat(this)">Other (2)</button><button class="filter-btn" data-cat="Music" onclick="filterCat(this)">Music (1)</button></div>
+<div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (67)</button><button class="filter-btn" data-cat="Furniture" onclick="filterCat(this)">Furniture (6)</button><button class="filter-btn" data-cat="Kitchen" onclick="filterCat(this)">Kitchen (8)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (8)</button><button class="filter-btn" data-cat="Computers & Accessories" onclick="filterCat(this)">Computers & Accessories (9)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (4)</button><button class="filter-btn" data-cat="Collectibles" onclick="filterCat(this)">Collectibles (1)</button><button class="filter-btn" data-cat="Home" onclick="filterCat(this)">Home (8)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (8)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="Other" onclick="filterCat(this)">Other (2)</button><button class="filter-btn" data-cat="Music" onclick="filterCat(this)">Music (1)</button></div>
 <main id="grid">
+    <article class="card" id="side-table-2tier" data-category="Furniture" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/images/20260915_175155.webp" alt="2-Tier Side Table" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>2-Tier Side Table</h3>
+        <ul class="specs"><li>Solid wood shelves, black metal frame</li><li>Generic/unbranded</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, no structural damage — just cosmetic scuffs
+        </div>
+        <div class="row"><span class="label">New price ref:</span> ~$60–80 NZD new (comparable)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$25 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('2-Tier Side Table')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="morris-entertainment-unit" data-category="Furniture" data-status="Available">
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_181553.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_181558.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>Morris 1.8m Entertainment Unit — Oak</h3>
+        <ul class="specs"><li>1.8m TV unit, fits up to 75" TV</li><li>2× cabinets + 2× drawers + open shelf</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, good condition
+        </div>
+        <div class="row"><span class="label">New price ref:</span> $329 NZD new (bought late 2022, treasurebox.co.nz)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$100 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Morris 1.8m Entertainment Unit — Oak')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="desta-dining-table" data-category="Furniture" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/images/desta_dining_table_1.webp" alt="Desta Dining Table Rectangle 160x90cm - White + 5 Chairs" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>Desta Dining Table Rectangle 160x90cm - White + 5 Chairs</h3>
+        <ul class="specs"><li>Concrete-look tabletop, white legs, 160x90cm</li><li>Comes with 5 dining chairs — chair photos coming soon</li><li>SKU 22500</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — bought Oct 2022
+        </div>
+        <div class="row"><span class="label">New price ref:</span> $199 NZD new (table only)</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$120 NZD <span class="per-note">(table + 5 chairs)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Desta Dining Table Rectangle 160x90cm - White + 5 Chairs')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="inherited-double-bed-2" data-category="Furniture" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/images/inherited-bed2.webp" alt="Double Bed + Mattress" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>Double Bed + Mattress</h3>
+        <ul class="specs"><li>Double bed base + mattress</li><li>No brand/model known — inherited</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, unknown age
+        </div>
+        <div class="row"><span class="label">New price ref:</span> unknown — unbranded/inherited</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$50 NZD</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Double Bed + Mattress')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="inherited-double-bed-3" data-category="Furniture" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/images/inherited-bed3.webp" alt="Double Bed" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>Double Bed</h3>
+        <ul class="specs"><li>Think this is 2 mattresses stacked, not a proper bed base</li><li>No brand/model known — inherited</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used, unknown age
+        </div>
+        <div class="row"><span class="label">New price ref:</span> unknown — unbranded/inherited</div>
+        <div class="price-block">
+          <div class="price-label">Asking</div>
+          <div class="price">Free</div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Double Bed')">Make an offer</button>
+      </div>
+    </article>
+
+    <article class="card" id="xoan-bed-betalife-mattress" data-category="Furniture" data-status="Available">
+      <div class="gallery single"><img class="photo" src="/images/xoan-bed-betalife-mattress.webp" alt="Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="card-body">
+        <div class="eyebrow">Furniture</div>
+        <h3>Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress</h3>
+        <ul class="specs"><li>Oak wooden slat headboard bed frame</li><li>BetaLife Luxury Plus gel memory foam mattress, Double</li></ul>
+        <div class="row condition-row">
+          <span class="label">Condition:</span> Used — bought Sep 2021
+        </div>
+        <div class="row"><span class="label">New price ref:</span> $329 NZD (bed frame) + $449.99 NZD (mattress) new</div>
+        <div class="price-block">
+          <div class="price-label">Asking (approx — make an offer)</div>
+          <div class="price">$220 NZD <span class="per-note">(frame + mattress together)</span></div>
+        </div>
+        <button class="offer-btn" onclick="openOfferModal('Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress')">Make an offer</button>
+      </div>
+    </article>
 
     <article class="card" id="pioneer-ddj-sr" data-category="DJ / Audio" data-status="Available">
       <div class="gallery single"><img class="photo" src="/images/20260914_152015.webp" alt="Pioneer DDJ-SR — Serato DJ Controller" loading="lazy" onclick="openDetailModal(this)"></div>
@@ -762,47 +874,6 @@
           <div class="price">$150 NZD</div>
         </div>
         <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
-      </div>
-    </article>
-
-    <article class="card" id="side-table-2tier" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/20260915_175155.webp" alt="2-Tier Side Table" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>2-Tier Side Table</h3>
-        <ul class="specs"><li>Solid wood shelves, black metal frame</li><li>Generic/unbranded</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, no structural damage — just cosmetic scuffs
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$60–80 NZD new (comparable)</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$25 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('2-Tier Side Table')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="morris-entertainment-unit" data-category="Furniture" data-status="Available">
-      <div class="gallery multi" data-count="2">
-      <div class="slides"><div class="slide"><img class="photo" src="/images/20260915_181553.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/20260915_181558.webp" alt="Morris 1.8m Entertainment Unit — Oak" loading="lazy" onclick="openDetailModal(this)"></div></div>
-      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
-      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
-      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
-    </div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>Morris 1.8m Entertainment Unit — Oak</h3>
-        <ul class="specs"><li>1.8m TV unit, fits up to 75" TV</li><li>2× cabinets + 2× drawers + open shelf</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, good condition
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $329 NZD new (bought late 2022, treasurebox.co.nz)</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$100 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Morris 1.8m Entertainment Unit — Oak')">Make an offer</button>
       </div>
     </article>
 
@@ -1529,24 +1600,6 @@
       </div>
     </article>
 
-    <article class="card" id="desta-dining-table" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/desta_dining_table_1.webp" alt="Desta Dining Table Rectangle 160x90cm - White + 5 Chairs" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>Desta Dining Table Rectangle 160x90cm - White + 5 Chairs</h3>
-        <ul class="specs"><li>Concrete-look tabletop, white legs, 160x90cm</li><li>Comes with 5 dining chairs — chair photos coming soon</li><li>SKU 22500</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used — bought Oct 2022
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $199 NZD new (table only)</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$120 NZD <span class="per-note">(table + 5 chairs)</span></div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Desta Dining Table Rectangle 160x90cm - White + 5 Chairs')">Make an offer</button>
-      </div>
-    </article>
-
     <article class="card" id="thunderx3-yama1-chair" data-category="Computers &amp; Accessories" data-status="Available">
       <div class="gallery single"><img class="photo" src="/images/thunderx3_yama1_1.webp" alt="ThunderX3 YAMA1 Gaming Ergonomic Chair" loading="lazy" onclick="openDetailModal(this)"></div>
       <div class="card-body">
@@ -1603,60 +1656,6 @@
           <div class="price">$60 NZD</div>
         </div>
         <button class="offer-btn" onclick="openOfferModal('Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="inherited-double-bed-2" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/inherited-bed2.webp" alt="Double Bed + Mattress" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>Double Bed + Mattress</h3>
-        <ul class="specs"><li>Double bed base + mattress</li><li>No brand/model known — inherited</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, unknown age
-        </div>
-        <div class="row"><span class="label">New price ref:</span> unknown — unbranded/inherited</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$50 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Double Bed + Mattress')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="inherited-double-bed-3" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/inherited-bed3.webp" alt="Double Bed" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>Double Bed</h3>
-        <ul class="specs"><li>Think this is 2 mattresses stacked, not a proper bed base</li><li>No brand/model known — inherited</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, unknown age
-        </div>
-        <div class="row"><span class="label">New price ref:</span> unknown — unbranded/inherited</div>
-        <div class="price-block">
-          <div class="price-label">Asking</div>
-          <div class="price">Free</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Double Bed')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="xoan-bed-betalife-mattress" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/xoan-bed-betalife-mattress.webp" alt="Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Furniture</div>
-        <h3>Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress</h3>
-        <ul class="specs"><li>Oak wooden slat headboard bed frame</li><li>BetaLife Luxury Plus gel memory foam mattress, Double</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used — bought Sep 2021
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $329 NZD (bed frame) + $449.99 NZD (mattress) new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$220 NZD <span class="per-note">(frame + mattress together)</span></div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress')">Make an offer</button>
       </div>
     </article>
 
@@ -1772,6 +1771,51 @@ function submitOfferForm(e) {
 <script>
 let currentCategory = 'all';
 let currentStatus = 'all';
+
+// Controls the order same-category cards get grouped into on page load —
+// edit this list to reorder categories instead of manually cutting and
+// pasting <article> blocks around the file. Any category not listed here
+// (there shouldn't be any — every card's data-category should appear
+// above) falls back to sorting after everything listed, in whatever order
+// it was already in.
+const CATEGORY_ORDER = [
+  'Furniture',
+  'Home',
+  'Kitchen',
+  'DJ / Audio',
+  'Photography',
+  'Car Electronics',
+  'Home Entertainment',
+  'Computers & Accessories',
+  'Tools',
+  'Gaming',
+  'Collectibles',
+  'Networking',
+  'Networking — 10G cards',
+  'Networking — cables',
+  'Networking — transceivers',
+  'Other',
+  'Music',
+];
+
+// Groups all .card elements inside #grid by category, in CATEGORY_ORDER,
+// re-appending them in that order. A stable sort (cards keep their
+// existing relative order within a category) — appendChild on a node
+// already in the DOM just moves it, so this is a single pass with no
+// cloning needed.
+function sortCardsByCategory() {
+  const grid = document.getElementById('grid');
+  const cards = [...grid.querySelectorAll('.card')];
+  const rank = (card) => {
+    const i = CATEGORY_ORDER.indexOf(card.dataset.category);
+    return i === -1 ? CATEGORY_ORDER.length : i;
+  };
+  cards
+    .map((card, i) => ({ card, i, r: rank(card) }))
+    .sort((a, b) => a.r - b.r || a.i - b.i)
+    .forEach(({ card }) => grid.appendChild(card));
+}
+sortCardsByCategory();
 
 function applyFilters() {
   document.querySelectorAll('.card').forEach(card => {
