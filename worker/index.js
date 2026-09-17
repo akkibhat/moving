@@ -131,7 +131,7 @@ const ITEM_LISTED_PRICES = {
   'Microsoft Surface Laptop (1st Gen) + Dock + USB-C Adapter': '$200 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': 'Free',
-  'Harris Double Wooden Bed Frame with Storage - Oak': '$90 NZD',
+  'Harris Double Wooden Bed Frame with Storage - Oak': '$120 NZD',
   'BetaLife Luxury Plus Mattress': '$150 NZD',
 };
 
