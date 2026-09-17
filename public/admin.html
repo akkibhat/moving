@@ -179,6 +179,17 @@
     background: var(--card-bg);
     cursor: pointer;
   }
+  .amount-edit { display: inline-flex; align-items: center; gap: 6px; }
+  .amount-input {
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--card-bg);
+    width: 80px;
+  }
   table.visits { width: 100%; border-collapse: collapse; background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
   table.visits th, table.visits td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
   table.visits th { background: var(--accent-soft); font-weight: 700; }
@@ -300,6 +311,25 @@ async function setItemStatus(item, status) {
   });
 
   lastOffers.forEach((o) => { if (o.item === item) o.itemStatus = status; });
+  renderGroups(lastOffers);
+}
+
+// Overwrites one offer's recorded amount (e.g. after negotiating a
+// different number over text/PM, or fixing a typo) — writes straight to
+// that offer's KV record via its key, then re-renders from the patched
+// local copy the same way markPaid/markPickedUp do.
+async function setOfferAmount(key, offerAmount) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-offer-amount', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ key, offerAmount }),
+  });
+
+  const offer = lastOffers.find((o) => o.key === key);
+  if (offer) offer.offerAmount = offerAmount;
   renderGroups(lastOffers);
 }
 
@@ -649,11 +679,19 @@ function buildOfferRow(o) {
   const selectWinnerBtn = o.winner
     ? ''
     : `<button class="paid-btn" data-key="${escapeHtml(o.key)}" onclick="setWinner(this.closest('.item-group').dataset.item, this.dataset.key)">Select as winner</button>`;
+  // Editable amount field — lets Akki correct a typo'd/negotiated offer
+  // amount directly (e.g. after a back-and-forth over text/PM), or add one
+  // to an offer that came in with none. Enter or the Save button both
+  // commit via setOfferAmount(), keyed off this offer's own KV key.
+  const amountEdit = `<span class="amount-edit">
+    <input type="text" class="amount-input" data-key="${escapeHtml(o.key)}" value="${escapeHtml(o.offerAmount || '')}" placeholder="e.g. $50" onkeydown="if(event.key==='Enter'){this.nextElementSibling.click();}">
+    <button class="paid-btn" onclick="setOfferAmount(this.previousElementSibling.dataset.key, this.previousElementSibling.value)">Save</button>
+  </span>${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}`;
   row.innerHTML = `
     ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
     <span class="name">${escapeHtml(o.name || '(no name)')}</span>
     ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
-    ${o.offerAmount ? `<span class="amount">${escapeHtml(o.offerAmount)}${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}</span>` : ''}
+    ${amountEdit}
     <span class="${badgeClass}">${escapeHtml(o.source)}</span>
     <span class="meta">${dateStr}</span>
     ${selectWinnerBtn}

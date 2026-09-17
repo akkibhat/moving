@@ -28,6 +28,11 @@
 //                                (Available / Pending Sale / Sold) in KV.
 //                                This is what admin.html's per-item status
 //                                dropdown calls.
+//   POST /api/set-offer-amount - password-gated: overwrites the offerAmount
+//                                on one stored offer record — for correcting
+//                                a typo'd/negotiated amount after the fact.
+//                                This is what admin.html's per-offer amount
+//                                field calls.
 //   POST /api/set-winner      - password-gated: marks one specific offer as
 //                                the winning offer for its item (and clears
 //                                the winner flag off every other offer on
@@ -125,8 +130,8 @@ const ITEM_LISTED_PRICES = {
   'Conair Upright Clothes Steamer': '$40 NZD',
   'Microsoft Surface Laptop (1st Gen) + Dock + USB-C Adapter': '$200 NZD',
   'Double Bed': 'Free',
-  'Double Bed + Mattress': '$50 NZD',
-  'Xoan Double Bed Frame - Oak': '$90 NZD',
+  'Double Bed + Mattress': 'Free',
+  'Harris Double Wooden Bed Frame with Storage - Oak': '$90 NZD',
   'BetaLife Luxury Plus Mattress': '$150 NZD',
 };
 
@@ -200,6 +205,9 @@ export default {
     }
     if (url.pathname === '/api/set-item-status' && request.method === 'POST') {
       return handleSetItemStatus(request, env);
+    }
+    if (url.pathname === '/api/set-offer-amount' && request.method === 'POST') {
+      return handleSetOfferAmount(request, env);
     }
     if (url.pathname === '/api/set-winner' && request.method === 'POST') {
       return handleSetWinner(request, env);
@@ -447,6 +455,41 @@ async function handleSetItemStatus(request, env) {
   }
 
   await env.OFFERS_KV.put(`status:${item}`, status);
+  return jsonResponse({ ok: true });
+}
+
+// Overwrites the offerAmount on one stored offer record — for when Akki
+// negotiates a different number over text/PM after the fact, or a buyer's
+// typed offer had a typo. Takes the offer's KV key (as returned by
+// /api/offers), same identify-by-key pattern as handleSetOfferFlag, but
+// writes a string field instead of flipping a boolean.
+async function handleSetOfferAmount(request, env) {
+  const suppliedPassword = request.headers.get('x-admin-password');
+  if (!env.ADMIN_PASSWORD || suppliedPassword !== env.ADMIN_PASSWORD) {
+    return jsonResponse({ error: 'Unauthorized' }, 401);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const { key, offerAmount } = payload;
+  if (!key || offerAmount === undefined) {
+    return jsonResponse({ error: 'Missing key or offerAmount' }, 400);
+  }
+
+  const existing = await env.OFFERS_KV.get(key);
+  if (!existing) {
+    return jsonResponse({ error: 'Offer not found' }, 404);
+  }
+
+  const record = JSON.parse(existing);
+  record.offerAmount = offerAmount;
+  await env.OFFERS_KV.put(key, JSON.stringify(record));
+
   return jsonResponse({ ok: true });
 }
 
