@@ -102,6 +102,7 @@
     flex-direction: column;
   }
   .card.hidden { display: none; }
+  .filter-btn.hidden { display: none; }
   .card.pending .card-body { opacity: 0.7; }
   .card.pending .gallery { filter: grayscale(0.25); }
   .card.sold .card-body { opacity: 0.55; }
@@ -245,10 +246,10 @@
   <h1>Moving Sale — Everything Must Go</h1>
   <p>I've accumulated all this over the years — I'm moving to the South Island in the next few weeks, so it all needs to go! Prices below are approximate — make me an offer if you want something. Pickup in Grey Lynn, Auckland.</p>
   <div class="summary-bar">
-    <button class="summary-stat active" data-status="all" onclick="filterStatus(this)"><b>62</b> Items Listed</button><button class="summary-stat" data-status="Pending Sale" onclick="filterStatus(this)"><b>4</b> Items Pending Sale</button><button class="summary-stat" data-status="Sold" onclick="filterStatus(this)"><b>9</b> Items Sold</button>
+    <button class="summary-stat active" data-status="all" onclick="filterStatus(this)"><b>57</b> Items Listed</button><button class="summary-stat" data-status="Pending Sale" onclick="filterStatus(this)"><b>3</b> Items Pending Sale</button><button class="summary-stat" data-status="Sold" onclick="filterStatus(this)"><b>9</b> Items Sold</button>
   </div>
 </header>
-<div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All (67)</button><button class="filter-btn" data-cat="Furniture" onclick="filterCat(this)">Furniture (6)</button><button class="filter-btn" data-cat="Kitchen" onclick="filterCat(this)">Kitchen (8)</button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio (1)</button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography (1)</button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics (1)</button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment (8)</button><button class="filter-btn" data-cat="Computers & Accessories" onclick="filterCat(this)">Computers & Accessories (9)</button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools (1)</button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming (4)</button><button class="filter-btn" data-cat="Collectibles" onclick="filterCat(this)">Collectibles (1)</button><button class="filter-btn" data-cat="Home" onclick="filterCat(this)">Home (8)</button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking (8)</button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards (6)</button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables (1)</button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers (1)</button><button class="filter-btn" data-cat="Other" onclick="filterCat(this)">Other (2)</button><button class="filter-btn" data-cat="Music" onclick="filterCat(this)">Music (1)</button></div>
+<div class="filters"><button class="filter-btn active" data-cat="all" onclick="filterCat(this)">All <span class="cat-count">(67)</span></button><button class="filter-btn" data-cat="Furniture" onclick="filterCat(this)">Furniture <span class="cat-count">(6)</span></button><button class="filter-btn" data-cat="Kitchen" onclick="filterCat(this)">Kitchen <span class="cat-count">(8)</span></button><button class="filter-btn" data-cat="DJ / Audio" onclick="filterCat(this)">DJ / Audio <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Photography" onclick="filterCat(this)">Photography <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Car Electronics" onclick="filterCat(this)">Car Electronics <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Home Entertainment" onclick="filterCat(this)">Home Entertainment <span class="cat-count">(8)</span></button><button class="filter-btn" data-cat="Computers & Accessories" onclick="filterCat(this)">Computers & Accessories <span class="cat-count">(9)</span></button><button class="filter-btn" data-cat="Tools" onclick="filterCat(this)">Tools <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Gaming" onclick="filterCat(this)">Gaming <span class="cat-count">(4)</span></button><button class="filter-btn" data-cat="Collectibles" onclick="filterCat(this)">Collectibles <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Home" onclick="filterCat(this)">Home <span class="cat-count">(8)</span></button><button class="filter-btn" data-cat="Networking" onclick="filterCat(this)">Networking <span class="cat-count">(8)</span></button><button class="filter-btn" data-cat="Networking — 10G cards" onclick="filterCat(this)">Networking — 10G cards <span class="cat-count">(6)</span></button><button class="filter-btn" data-cat="Networking — cables" onclick="filterCat(this)">Networking — cables <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Networking — transceivers" onclick="filterCat(this)">Networking — transceivers <span class="cat-count">(1)</span></button><button class="filter-btn" data-cat="Other" onclick="filterCat(this)">Other <span class="cat-count">(2)</span></button><button class="filter-btn" data-cat="Music" onclick="filterCat(this)">Music <span class="cat-count">(1)</span></button></div>
 <main id="grid">
     <article class="card" id="side-table-2tier" data-category="Furniture" data-status="Available">
       <div class="gallery single"><img class="photo" src="/images/20260915_175155.webp" alt="2-Tier Side Table" loading="lazy" onclick="openDetailModal(this)"></div>
@@ -695,26 +696,6 @@
           <div class="price">Free <span class="per-note">(to a good home — all together)</span></div>
         </div>
         <button class="offer-btn" disabled title="Sold">Sold</button>
-      </div>
-    </article>
-
-    <article class="card pending" id="ozito-pxc-set" data-category="Tools" data-status="Pending Sale">
-      <div class="gallery single">
-      <span class="status-badge">Pending sale</span>
-      <img class="photo" src="/images/20260914_152702.webp" alt="Ozito PXC 18V Drill + LED Worklight + Battery + Charger" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Tools</div>
-        <h3>Ozito PXC 18V Drill + LED Worklight + Battery + Charger</h3>
-        <ul class="specs"><li>18V cordless drill/driver</li><li>18V LED worklight (shares same battery platform)</li><li>1.5Ah battery + charger included</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, working
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$150–180 NZD new for equivalent pieces bought separately</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$60 NZD</div>
-        </div>
-        <button class="offer-btn" disabled title="Pending sale">Pending sale</button>
       </div>
     </article>
 
@@ -1659,77 +1640,6 @@
       </div>
     </article>
 
-    <article class="card" id="brother-printer" data-category="Computers &amp; Accessories" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/brother_printer_1.webp" alt="Brother HL-L2400DW Mono Laser Printer" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Computers &amp; Accessories</div>
-        <h3>Brother HL-L2400DW Mono Laser Printer</h3>
-        <ul class="specs"><li>Duplex (auto double-sided) printing</li><li>USB + Wi-Fi connectivity</li><li>Great for home/student use</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, working — bought Nov 2024 for $190, some cosmetic wear/dust
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $151 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$80 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Brother HL-L2400DW Mono Laser Printer')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="breville-hand-mixer" data-category="Kitchen" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/breville_mixer_1.webp" alt="Breville Hand Mixer + 2 Sets of Beaters" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Kitchen</div>
-        <h3>Breville Hand Mixer + 2 Sets of Beaters</h3>
-        <ul class="specs"><li>Corded electric hand mixer</li><li>Comes with 2 sets of beaters</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used, working
-        </div>
-        <div class="row"><span class="label">New price ref:</span> ~$55-60 NZD new (comparable Breville hand mixer)</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$15 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Breville Hand Mixer + 2 Sets of Beaters')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="goldair-heated-blanket" data-category="Home" data-status="Available">
-      <div class="card-body">
-        <div class="eyebrow">Home</div>
-        <h3>Goldair Weighted Heated Blanket 4.5kg</h3>
-        <ul class="specs"><li>Product code 203526</li><li>4.5kg weighted + heated</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used — bought Jun 2022 (photo coming soon)
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $100 NZD new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$50 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Goldair Weighted Heated Blanket 4.5kg')">Make an offer</button>
-      </div>
-    </article>
-
-    <article class="card" id="ecosa-weighted-blanket" data-category="Home" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/ecosa_blanket_1.webp" alt="Ecosa Weighted Blanket 9kg" loading="lazy" onclick="openDetailModal(this)"></div>
-      <div class="card-body">
-        <div class="eyebrow">Home</div>
-        <h3>Ecosa Weighted Blanket 9kg</h3>
-        <ul class="specs"><li>9kg weighted blanket</li></ul>
-        <div class="row condition-row">
-          <span class="label">Condition:</span> Used — bought Jun 2021 for $256 (photo shown is Ecosa's product photo, not the actual blanket)
-        </div>
-        <div class="row"><span class="label">New price ref:</span> $256 NZD paid new</div>
-        <div class="price-block">
-          <div class="price-label">Asking (approx — make an offer)</div>
-          <div class="price">$100 NZD</div>
-        </div>
-        <button class="offer-btn" onclick="openOfferModal('Ecosa Weighted Blanket 9kg')">Make an offer</button>
-      </div>
-    </article>
-
     </main>
 <footer>
   <p>Prices are rough starting points based on NZ retail pricing for the new equivalent and typical used resale ratios — not a valuation, and open to offers. Auckland (Grey Lynn) pickup assumed unless you say otherwise.</p>
@@ -1888,6 +1798,13 @@ function sortCardsByCategory() {
 }
 sortCardsByCategory();
 
+// Same "does this card match the current status filter" rule applyFilters
+// uses, pulled out so recomputeCategoryCounts can reuse it per-category
+// without duplicating the Sold-exclusion logic.
+function matchesCurrentStatus(card) {
+  return currentStatus === 'all' ? card.dataset.status !== 'Sold' : card.dataset.status === currentStatus;
+}
+
 function applyFilters() {
   document.querySelectorAll('.card').forEach(card => {
     const matchesCategory = currentCategory === 'all' || card.dataset.category === currentCategory;
@@ -1895,8 +1812,34 @@ function applyFilters() {
     // Sold items are excluded so the default view isn't cluttered with
     // stuff that's already gone. The dedicated "Items Sold" button still
     // shows them on request.
-    const matchesStatus = currentStatus === 'all' ? card.dataset.status !== 'Sold' : card.dataset.status === currentStatus;
-    card.classList.toggle('hidden', !(matchesCategory && matchesStatus));
+    card.classList.toggle('hidden', !(matchesCategory && matchesCurrentStatus(card)));
+  });
+  recomputeCategoryCounts();
+}
+
+// The "(N)" next to each category pill was previously baked into the HTML
+// at draft time and never updated — it went stale (still counting Sold/
+// removed items) and never changed when switching status tabs. Now it's
+// recomputed from the live DOM every time the category or status filter
+// changes, honoring whichever status tab is currently active the same way
+// applyFilters() does.
+function recomputeCategoryCounts() {
+  const cards = document.querySelectorAll('.card');
+  document.querySelectorAll('.filter-btn').forEach((btn) => {
+    const cat = btn.dataset.cat;
+    let count = 0;
+    cards.forEach((card) => {
+      const matchesCategory = cat === 'all' || card.dataset.category === cat;
+      if (matchesCategory && matchesCurrentStatus(card)) count += 1;
+    });
+    const span = btn.querySelector('.cat-count');
+    if (span) span.textContent = `(${count})`;
+    // Hide a category pill once nothing in the current status view falls
+    // under it (e.g. its one item was Sold, or pulled from the listing
+    // entirely) — but never hide "All" or whichever pill is active, so the
+    // filter bar never strands the user with no way back to what they
+    // currently have selected.
+    btn.classList.toggle('hidden', count === 0 && cat !== 'all' && !btn.classList.contains('active'));
   });
 }
 function filterCat(btn) {
@@ -1932,6 +1875,10 @@ function setSlide(dot) {
 document.querySelectorAll('.gallery.multi').forEach(g => {
   g.querySelectorAll('.dot')[0]?.classList.add('active');
 });
+// Category pill counts are baked into the HTML at draft time and can drift
+// (items added/removed without hand-editing every "(N)") — recompute once
+// on load so the page is correct even before anyone touches a filter.
+recomputeCategoryCounts();
 </script>
 
 <script>
@@ -1999,6 +1946,13 @@ function recomputeSummaryCounts() {
 // does effectively nothing. Fails silently — if the fetch doesn't work for
 // any reason, the statically-rendered status from the last deploy is still
 // correct, just possibly a little stale.
+// Run once synchronously against the statically-rendered page (before the
+// KV override fetch below even resolves) so a Pending Sale/Sold pill that's
+// already empty at deploy time is hidden immediately, not just after some
+// live status change triggers a recompute.
+recomputeSummaryCounts();
+applyFilters();
+
 fetch('/api/item-status')
   .then((res) => (res.ok ? res.json() : {}))
   .then((overrides) => {
