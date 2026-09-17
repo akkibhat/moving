@@ -126,7 +126,8 @@ const ITEM_LISTED_PRICES = {
   'Conair Upright Clothes Steamer': '$40 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': '$50 NZD',
-  'Xoan Double Bed Frame - Oak + BetaLife Luxury Plus Mattress': '$220 NZD',
+  'Xoan Double Bed Frame - Oak': '$90 NZD',
+  'BetaLife Luxury Plus Mattress': '$150 NZD',
 };
 
 function listedPriceFor(item) {
