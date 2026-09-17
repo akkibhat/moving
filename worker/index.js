@@ -119,7 +119,7 @@ const ITEM_LISTED_PRICES = {
   'Flynn 170cm Computer Desk - Oak': '$80 NZD',
   'Xoan Wooden Tallboy 4 Drawers - Oak': '$50 NZD',
   'Rudolf 5 Tier Bookshelf - Oak': '$80 NZD',
-  'Desta Dining Table Rectangle 160x90cm - White + 5 Chairs': '$100 NZD',
+  'Desta Dining Table Rectangle 160x90cm - White + 4 Chairs': '$100 NZD',
   'ThunderX3 YAMA1 Gaming Ergonomic Chair': '$90 NZD',
   'Kogan SmarterHome Bladeless Purifier Tower Fan': '$50 NZD',
   'Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)': '$60 NZD',
