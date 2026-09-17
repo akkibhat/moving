@@ -124,6 +124,7 @@ const ITEM_LISTED_PRICES = {
   'Goldair Weighted Heated Blanket 4.5kg': '$50 NZD',
   'Ecosa Weighted Blanket 9kg': '$100 NZD',
   'Conair Upright Clothes Steamer': '$40 NZD',
+  'Microsoft Surface Laptop (1st Gen)': '$180 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': '$50 NZD',
   'Xoan Double Bed Frame - Oak': '$90 NZD',
