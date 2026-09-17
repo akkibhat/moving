@@ -129,7 +129,6 @@ const ITEM_LISTED_PRICES = {
   'Ecosa Weighted Blanket 9kg': '$100 NZD',
   'Microsoft Surface Laptop (1st Gen) + Dock + USB-C Adapter': '$150 NZD',
   '6-Drawer Wide Lowboy - Oak': '$80 NZD',
-  '4-Drawer Tallboy with Metal Legs - Oak': '$60 NZD',
   '5-Drawer Tallboy - White': '$50 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': 'Free',
