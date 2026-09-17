@@ -123,7 +123,7 @@ const ITEM_LISTED_PRICES = {
   'ThunderX3 YAMA1 Gaming Ergonomic Chair': '$90 NZD',
   'Kogan SmarterHome Bladeless Purifier Tower Fan': '$50 NZD',
   'Kogan SmarterHome 2400W Smart Glass Panel Heater (Black)': '$60 NZD',
-  'Brother HL-L2400DW Mono Laser Printer': '$80 NZD',
+  'Brother HL-L2400DW Mono Laser Printer': '$100 NZD',
   'Breville Hand Mixer + 2 Sets of Beaters': '$15 NZD',
   'Goldair Weighted Heated Blanket 4.5kg': '$50 NZD',
   'Ecosa Weighted Blanket 9kg': '$100 NZD',
