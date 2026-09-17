@@ -127,7 +127,6 @@ const ITEM_LISTED_PRICES = {
   'Breville Hand Mixer + 2 Sets of Beaters': '$15 NZD',
   'Goldair Weighted Heated Blanket 4.5kg': '$50 NZD',
   'Ecosa Weighted Blanket 9kg': '$100 NZD',
-  'Conair Upright Clothes Steamer': '$40 NZD',
   'Microsoft Surface Laptop (1st Gen) + Dock + USB-C Adapter': '$200 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': 'Free',
