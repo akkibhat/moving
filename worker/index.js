@@ -131,6 +131,7 @@ const ITEM_LISTED_PRICES = {
   '6-Drawer Wide Lowboy - Oak': '$80 NZD',
   '5-Drawer Tallboy - White': '$50 NZD',
   'Large Leather Corner Sofa': '$400 NZD',
+  'Harris Bedside Table - Oak': '$35 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': 'Free',
   'Harris Double Wooden Bed Frame with Storage - Oak': '$120 NZD',
