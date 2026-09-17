@@ -132,6 +132,7 @@ const ITEM_LISTED_PRICES = {
   '5-Drawer Tallboy - White': '$50 NZD',
   'Large Leather Corner Sofa': '$400 NZD',
   'Harris Bedside Table - Oak': '$35 NZD',
+  'Trade Depot Bladeless Fan with Heater and Air Purifier - 2000W': '$120 NZD',
   'Double Bed': 'Free',
   'Double Bed + Mattress': 'Free',
   'Harris Double Wooden Bed Frame with Storage - Oak': '$120 NZD',
