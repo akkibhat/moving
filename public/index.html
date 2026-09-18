@@ -293,11 +293,16 @@
     </article>
 
     <article class="card" id="desta-dining-table" data-category="Furniture" data-status="Available">
-      <div class="gallery single"><img class="photo" src="/images/desta_dining_table_1.webp" alt="Desta Dining Table Rectangle 160x90cm - White + 4 Chairs" loading="lazy" onclick="openDetailModal(this)"></div>
+      <div class="gallery multi" data-count="2">
+      <div class="slides"><div class="slide"><img class="photo" src="/images/desta_dining_table_1.webp" alt="Desta Dining Table Rectangle 160x90cm - White + 4 Chairs" loading="lazy" onclick="openDetailModal(this)"></div><div class="slide"><img class="photo" src="/images/desta_chair_1.webp" alt="Desta dining chair" loading="lazy" onclick="openDetailModal(this)"></div></div>
+      <button class="nav prev" onclick="shiftSlide(this,-1)">&#8249;</button>
+      <button class="nav next" onclick="shiftSlide(this,1)">&#8250;</button>
+      <div class="dots"><button class="dot" data-i="0" onclick="setSlide(this)"></button><button class="dot" data-i="1" onclick="setSlide(this)"></button></div>
+    </div>
       <div class="card-body">
         <div class="eyebrow">Furniture</div>
         <h3>Desta Dining Table Rectangle 160x90cm - White + 4 Chairs</h3>
-        <ul class="specs"><li>Concrete-look tabletop, white legs, 160x90cm</li><li>Comes with 4 dining chairs — chair photos coming soon</li><li>SKU 22500</li></ul>
+        <ul class="specs"><li>Concrete-look tabletop, white legs, 160x90cm</li><li>Comes with 4 dining chairs — grey fabric, chrome cantilever legs</li><li>SKU 22500</li></ul>
         <div class="row condition-row">
           <span class="label">Condition:</span> Used — bought Oct 2022
         </div>
