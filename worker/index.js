@@ -130,7 +130,7 @@ const ITEM_LISTED_PRICES = {
   'Microsoft Surface Laptop (1st Gen) + Dock + USB-C Adapter': '$150 NZD',
   '6-Drawer Wide Lowboy - Oak': '$80 NZD',
   '5-Drawer Tallboy - White': '$50 NZD',
-  'Large Leather Corner Sofa': '$400 NZD',
+  'Large Leather Corner Sofa': '$200 NZD',
   'Harris Bedside Table - Oak': '$35 NZD',
   'Trade Depot Bladeless Fan with Heater and Air Purifier - 2000W': '$120 NZD',
   'Double Bed': 'Free',
