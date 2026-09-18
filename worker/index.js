@@ -137,6 +137,8 @@ const ITEM_LISTED_PRICES = {
   'Double Bed + Mattress': 'Free',
   'Harris Double Wooden Bed Frame with Storage - Oak': '$120 NZD',
   'BetaLife Luxury Plus Mattress': '$150 NZD',
+  'Wicker Outdoor Chairs + Ottoman': '$20 NZD',
+  'Glass-Top Outdoor Dining Table + 6 Chairs': '$50 NZD',
 };
 
 function listedPriceFor(item) {
