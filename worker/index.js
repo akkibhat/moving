@@ -561,7 +561,11 @@ async function handleGetVisits(request, env) {
   // first) avoids fetching every value just to sort.
   allKeys.sort((a, b) => (a.name < b.name ? 1 : -1));
 
-  const values = await Promise.all(allKeys.map((key) => env.VISITS_KV.get(key.name)));
+  // A Worker invocation may make at most 1000 subrequests, and every KV get
+  // counts as one (plus the list calls above). Past ~1000 stored visits the
+  // old fetch-everything approach threw, so only the newest MAX_VISITS are read.
+  const MAX_VISITS = 900;
+  const values = await Promise.all(allKeys.slice(0, MAX_VISITS).map((key) => env.VISITS_KV.get(key.name)));
   const visits = values.filter(Boolean).map((v) => JSON.parse(v));
 
   return jsonResponse(visits);
