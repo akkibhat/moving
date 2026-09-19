@@ -265,6 +265,11 @@ async function logVisit(request, env) {
 
 async function handleImage(request, env, url) {
   const key = decodeURIComponent(url.pathname.replace('/images/', ''));
+  // Anything under private/ (e.g. the visits cache) shares this bucket but must
+  // never be downloadable through this public route.
+  if (key.startsWith('private/')) {
+    return new Response('Not found', { status: 404 });
+  }
   const object = await env.IMAGES.get(key);
   if (!object) {
     return new Response('Not found', { status: 404 });
@@ -546,30 +551,59 @@ async function handleGetVisits(request, env) {
     return jsonResponse({ error: 'Unauthorized' }, 401);
   }
 
-  // Every visit still in the 90-day retention window (VISITS_KV entries
-  // expire via expirationTtl, so this list is naturally bounded — no need
-  // to cap it further here).
-  const allKeys = [];
+  // 1. Load the permanent cache of visits from R2. Each entry is
+  //    { k: <the KV key name>, v: <the parsed visit record> }. VISITS_KV entries
+  //    expire after 90 days, but anything already copied into this file stays
+  //    forever. A missing file just means "start with an empty cache".
+  const cacheObject = await env.IMAGES.get(VISITS_CACHE_KEY);
+  const cached = cacheObject ? await cacheObject.json() : [];
+  const cachedKeys = new Set(cached.map((entry) => entry.k));
+
+  // 2. List every visit key still in KV. (Listing costs one subrequest per
+  //    1000 keys, so this stays cheap however large the log grows.)
+  const kvKeys = [];
   let cursor;
   do {
     const list = await env.VISITS_KV.list({ prefix: 'visit:', cursor, limit: 1000 });
-    allKeys.push(...list.keys);
+    kvKeys.push(...list.keys);
     cursor = list.cursor;
   } while (cursor);
 
-  // Keys are ISO-timestamp-prefixed, so sorting the keys themselves (newest
-  // first) avoids fetching every value just to sort.
-  allKeys.sort((a, b) => (a.name < b.name ? 1 : -1));
+  // 3. Work out which keys are not in the cache yet, newest first. A Worker
+  //    invocation may make at most 1000 subrequests and every KV get counts as
+  //    one, so read at most MAX_NEW_PER_LOAD per request; anything left over is
+  //    picked up on the next load because it is still missing from the cache.
+  const MAX_NEW_PER_LOAD = 900;
+  const newKeys = kvKeys
+    .map((key) => key.name)
+    .filter((name) => !cachedKeys.has(name))
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, MAX_NEW_PER_LOAD);
 
-  // A Worker invocation may make at most 1000 subrequests, and every KV get
-  // counts as one (plus the list calls above). Past ~1000 stored visits the
-  // old fetch-everything approach threw, so only the newest MAX_VISITS are read.
-  const MAX_VISITS = 900;
-  const values = await Promise.all(allKeys.slice(0, MAX_VISITS).map((key) => env.VISITS_KV.get(key.name)));
-  const visits = values.filter(Boolean).map((v) => JSON.parse(v));
+  // 4. Fetch just those new visits. A value can be null if the key expired
+  //    between the list and the get, so those are skipped.
+  const values = await Promise.all(newKeys.map((name) => env.VISITS_KV.get(name)));
+  const fresh = [];
+  newKeys.forEach((name, i) => {
+    if (values[i]) fresh.push({ k: name, v: JSON.parse(values[i]) });
+  });
 
-  return jsonResponse(visits);
+  // 5. Merge into the cache and save it back, but only if something changed.
+  //    Keys are ISO-timestamp-prefixed, so sorting on them gives newest first.
+  const merged = cached.concat(fresh).sort((a, b) => (a.k < b.k ? 1 : -1));
+  if (fresh.length > 0) {
+    await env.IMAGES.put(VISITS_CACHE_KEY, JSON.stringify(merged), {
+      httpMetadata: { contentType: 'application/json' },
+    });
+  }
+
+  return jsonResponse(merged.map((entry) => entry.v));
 }
+
+// R2 object that holds every visit ever logged. It lives in the same bucket as
+// the public photos, so handleImage() refuses any key starting with private/;
+// the password-gated /api/visits handler above is the only thing that reads it.
+const VISITS_CACHE_KEY = 'private/visits-cache.json';
 
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
