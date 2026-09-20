@@ -182,6 +182,9 @@
     border: 1px dashed var(--accent);
     border-radius: 8px;
   }
+  /* Sold items don't advertise what they went for (the detail modal drops the
+     block in openDetailModal(), since its copy isn't inside a .card.sold). */
+  .card.sold .price-block { display: none; }
   .price-label { font-size: 0.72rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
   .price { font-size: 1.15rem; font-weight: 700; color: var(--accent); }
   .per-note { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
@@ -1996,6 +1999,9 @@ function openDetailModal(img) {
   const bodyClone = card.querySelector('.card-body').cloneNode(true);
   // Photos inside the modal shouldn't re-trigger the modal on click.
   galleryClone.querySelectorAll('img.photo').forEach((im) => im.removeAttribute('onclick'));
+  if (card.classList.contains('sold')) {
+    bodyClone.querySelectorAll('.price-block').forEach((el) => el.remove());
+  }
 
   const content = document.getElementById('detailContent');
   content.innerHTML = '';
