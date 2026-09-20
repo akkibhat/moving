@@ -141,6 +141,7 @@ const ITEM_LISTED_PRICES = {
   'Glass-Top Outdoor Dining Table + 6 Chairs': '$50 NZD',
   'LG NeoChef 42L Smart Inverter Microwave (MS4296OBS)': '$100 NZD',
   'Mongoose DX 3.1 Mountain Bike': '$70 NZD',
+  'TP-Link Omada ER707-M2 — Multi-Gigabit VPN Gateway': '$180 NZD',
 };
 
 function listedPriceFor(item) {
