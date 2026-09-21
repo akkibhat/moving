@@ -87,7 +87,6 @@ const ITEM_LISTED_PRICES = {
   'PS4 DualShock 4 Controllers + Charging Dock': '$40 NZD',
   'PlayStation 3 (Slim)': '$50 NZD',
   'TCL 55C635 4K QLED Google TV': '$450 NZD',
-  'Instant Pot Duo 80 (8-Quart) 7-in-1 Multi-Cooker': '$100 NZD',
   'Assorted Harry Potter Wands + Owl Holder': '$20 NZD',
   'Netgear Orbi RBR750 Router + 2× RBS750 Satellites': '$350 NZD',
   'Sony HT-RT40 5.1ch Soundbar System': '$100 NZD',
