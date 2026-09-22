@@ -140,6 +140,8 @@ const ITEM_LISTED_PRICES = {
   'LG NeoChef 42L Smart Inverter Microwave (MS4296OBS)': '$100 NZD',
   'Mongoose DX 3.1 Mountain Bike': '$70 NZD',
   'TP-Link Omada ER707-M2 — Multi-Gigabit VPN Gateway': '$250 NZD',
+  'Free Kitchen Bundle': 'Free',
+  'Mirrored Dresser with Drawers - Black': 'Free',
 };
 
 function listedPriceFor(item) {
