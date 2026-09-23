@@ -142,6 +142,8 @@ const ITEM_LISTED_PRICES = {
   'TP-Link Omada ER707-M2 — Multi-Gigabit VPN Gateway': '$250 NZD',
   'Free Kitchen Bundle': 'Free',
   'Mirrored Dresser with Drawers - Black': 'Free',
+  'Akitio Node — Thunderbolt 3 eGPU Enclosure': '$130 NZD',
+  'AMD Radeon VII — 16GB HBM2 Graphics Card': '$380 NZD',
 };
 
 function listedPriceFor(item) {
