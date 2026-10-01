@@ -19,6 +19,10 @@ id = "f1a55f135e304224ba38cf7e9c51e0cd"
 binding = "IMAGES"
 bucket_name = "nzmovingsale-images"
 
-[[routes]]
-pattern = "move.pi.co.nz"
-custom_domain = true
+# Moving sale closed 2026-10-02. Custom domain route removed below so
+# move.pi.co.nz stops serving the site, without deleting the Worker, KV
+# offer/visit history, or R2 photos — all still intact for later. To bring
+# the site back, restore the commented block and `wrangler deploy` again.
+# [[routes]]
+# pattern = "move.pi.co.nz"
+# custom_domain = true
