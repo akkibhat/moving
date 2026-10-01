@@ -172,6 +172,16 @@
   .row { font-size: 0.85rem; color: var(--muted); }
   .label { color: var(--ink); font-weight: 600; }
   .condition-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .closed-banner {
+    background: var(--ok-bg, #e7f0e3);
+    border: 1px solid var(--ok-line, #a8c79a);
+    color: var(--ok-ink, #3d5c37);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 0 0 18px;
+    font-weight: 600;
+    text-align: center;
+  }
   .conf { font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; border: 1px solid; }
   .conf-ok { background: var(--ok-bg); border-color: var(--ok-line); color: #3d5c37; }
   .conf-warn { background: var(--warn-bg); border-color: var(--warn-line); color: #8a5a12; }
@@ -246,6 +256,7 @@
 </head>
 <body>
 <header>
+  <div class="closed-banner">Thank you all for your support — I've left Auckland now so no need for this. Remaining items below stay as a record, but I'm no longer taking new offers.</div>
   <h1>Moving Sale — Everything Must Go</h1>
   <p>I've accumulated all this over the years — I'm moving to the South Island in the next few weeks, so it all needs to go! Prices below are approximate — make me an offer if you want something. Pickup in Grey Lynn, Auckland.</p>
   <div class="summary-bar">
