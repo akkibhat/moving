@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Moving Sale — Offers (Private)</title>
+<style>
+  :root {
+    --bg: #faf8f4;
+    --ink: #1c1b19;
+    --muted: #6b6660;
+    --card-bg: #ffffff;
+    --accent: #b5502c;
+    --accent-soft: #f2e2da;
+    --line: #e7e2d9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 28px; font-size: 0.9rem; }
+  .gate {
+    max-width: 360px;
+    margin: 80px auto;
+    padding: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .gate input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 14px 0;
+  }
+  .gate button, .refresh-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gate .error { color: var(--accent); font-size: 0.85rem; min-height: 1.2em; }
+  [hidden] { display: none !important; }
+  .item-group {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .item-header {
+    background: var(--accent-soft);
+    padding: 12px 16px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-count { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .listed-price { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  .total-revenue {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-size: 1.05rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 40px;
+  }
+  .total-revenue b { color: var(--accent); font-size: 1.3rem; }
+  .total-revenue .total-note { display: block; color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
+  .status-section-heading {
+    font-size: 1.1rem;
+    margin: 28px 0 12px;
+    color: var(--accent);
+  }
+  .status-section-heading:first-child { margin-top: 0; }
+  .offer-row {
+    padding: 12px 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    align-items: baseline;
+  }
+  .offer-row.winner { background: var(--ok-bg, #eef4ec); }
+  .winner-badge {
+    flex-basis: 100%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #3d5c37;
+  }
+  .winner-note {
+    flex-basis: 100%;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #3d5c37;
+    margin-top: 2px;
+  }
+  .offer-row .name { font-weight: 600; }
+  .offer-row .amount { color: var(--accent); font-weight: 700; }
+  .amount-vs-listed { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+  .offer-row .meta { color: var(--muted); font-size: 0.82rem; }
+  .offer-row .message { flex-basis: 100%; font-size: 0.88rem; color: #45413c; margin-top: 2px; }
+  .badge {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--line);
+    color: var(--muted);
+  }
+  .badge.web { background: #eef4ec; color: #3d5c37; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+  .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  /* Top-level view switch (Offers vs Page Views) — visually distinct (square-ish,
+     bigger) from the status pills below it so it reads as a different tier of nav. */
+  .view-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+  .view-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 8px 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  .view-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .paid-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .paid-btn:hover { background: var(--accent-soft); }
+  .paid-btn.unpaid-btn { border-color: var(--muted); color: var(--muted); }
+  .status-select {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+  }
+  .amount-edit { display: inline-flex; align-items: center; gap: 6px; }
+  .amount-input {
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--card-bg);
+    width: 80px;
+  }
+  table.visits { width: 100%; border-collapse: collapse; background: var(--card-bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; font-size: 0.85rem; }
+  table.visits th, table.visits td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+  table.visits th { background: var(--accent-soft); font-weight: 700; }
+  table.visits tr:last-child td { border-bottom: none; }
+  .visits-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <h1 style="font-size:1.2rem;">Private — offers log</h1>
+  <p class="sub" style="margin-bottom:0;">Enter the password to view.</p>
+  <form onsubmit="event.preventDefault(); unlock();">
+    <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+    <div class="error" id="gateError"></div>
+    <button type="submit">Unlock</button>
+  </form>
+</div>
+
+<div class="wrap" id="content" hidden>
+  <div class="toolbar">
+    <div>
+      <h1 id="pageTitle">Pending Sale</h1>
+      <p class="sub" id="pageSub">Items with a claimed buyer, waiting on pickup/payment to finish.</p>
+    </div>
+    <button class="refresh-btn" onclick="refreshCurrentTab()">Refresh</button>
+  </div>
+  <div class="view-tabs">
+    <button class="view-btn active" data-view="offers" onclick="switchView('offers')">Offers</button>
+    <button class="view-btn" data-view="visits" onclick="switchView('visits')">Page Views</button>
+  </div>
+  <div class="tabs" id="statusTabs">
+    <button class="tab-btn active" data-tab="Pending Sale" onclick="switchTab('Pending Sale')">Pending Sale</button>
+    <button class="tab-btn" data-tab="Sold - Not Paid" onclick="switchTab('Sold - Not Paid')">Sold - Not Paid</button>
+    <button class="tab-btn" data-tab="Sold - Paid" onclick="switchTab('Sold - Paid')">Sold - Paid</button>
+    <button class="tab-btn" data-tab="Picked Up" onclick="switchTab('Picked Up')">Picked Up</button>
+    <button class="tab-btn" data-tab="Available" onclick="switchTab('Available')">Available</button>
+  </div>
+  <div class="total-revenue" id="totalRevenue" hidden></div>
+  <div id="groups"></div>
+  <div id="visitsWrap" hidden></div>
+</div>
+
+<script>
+const STORAGE_KEY = 'movingsale-admin-password';
+
+function unlock() {
+  const pw = document.getElementById('passwordInput').value;
+  sessionStorage.setItem(STORAGE_KEY, pw);
+  loadOffers();
+}
+
+// Which of the 4 status tabs is currently showing. Defaults to Pending Sale
+// since that's the "needs action" queue Akki checks most often.
+let currentTab = 'Pending Sale';
+
+// The full offers list from the last successful /api/offers fetch, kept
+// around so switching tabs (or toggling paid) can re-render instantly
+// without a network round-trip.
+let lastOffers = [];
+
+async function loadOffers() {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  const res = await fetch('/api/offers', {
+    headers: { 'X-Admin-Password': pw },
+  });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    document.getElementById('gate').hidden = false;
+    document.getElementById('content').hidden = true;
+    document.getElementById('gateError').textContent = 'Wrong password.';
+    return;
+  }
+
+  document.getElementById('gate').hidden = true;
+  document.getElementById('content').hidden = false;
+
+  lastOffers = await res.json();
+  renderGroups(lastOffers);
+}
+
+// Flips one boolean flag (paid or pickedUp) on a sold item's winning offer,
+// then re-renders from the already-loaded data (no need to refetch — we
+// know exactly what changed).
+async function setOfferFlag(key, field, value) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-offer-flag', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ key, field, value }),
+  });
+
+  const offer = lastOffers.find((o) => o.key === key);
+  if (offer) offer[field] = value;
+  renderGroups(lastOffers);
+}
+function markPaid(key, paid) { setOfferFlag(key, 'paid', paid); }
+function markPickedUp(key, pickedUp) { setOfferFlag(key, 'pickedUp', pickedUp); }
+
+// Mirrors the Worker's VALID_ITEM_STATUSES — used to build the status
+// dropdown's options in the order they naturally progress.
+const VALID_ITEM_STATUSES = ['Available', 'Pending Sale', 'Sold'];
+
+// Changes an item's live status (Available/Pending Sale/Sold). This also
+// updates what the public site shows, via /api/item-status — no redeploy.
+async function setItemStatus(item, status) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-item-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ item, status }),
+  });
+
+  lastOffers.forEach((o) => { if (o.item === item) o.itemStatus = status; });
+  renderGroups(lastOffers);
+}
+
+// Overwrites one offer's recorded amount (e.g. after negotiating a
+// different number over text/PM, or fixing a typo) — writes straight to
+// that offer's KV record via its key, then re-renders from the patched
+// local copy the same way markPaid/markPickedUp do.
+async function setOfferAmount(key, offerAmount) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-offer-amount', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ key, offerAmount }),
+  });
+
+  const offer = lastOffers.find((o) => o.key === key);
+  if (offer) offer.offerAmount = offerAmount;
+  renderGroups(lastOffers);
+}
+
+// Marks one offer as the winning offer for its item, un-marking any
+// previous winner on that same item, then re-renders.
+async function setWinner(item, key) {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  await fetch('/api/set-winner', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pw },
+    body: JSON.stringify({ item, key }),
+  });
+
+  lastOffers.forEach((o) => { if (o.item === item) o.winner = o.key === key; });
+  renderGroups(lastOffers);
+}
+
+async function loadVisits() {
+  const pw = sessionStorage.getItem(STORAGE_KEY);
+  if (!pw) return;
+
+  const res = await fetch('/api/visits', {
+    headers: { 'X-Admin-Password': pw },
+  });
+
+  if (res.status === 401) {
+    sessionStorage.removeItem(STORAGE_KEY);
+    document.getElementById('gate').hidden = false;
+    document.getElementById('content').hidden = true;
+    document.getElementById('gateError').textContent = 'Wrong password.';
+    return;
+  }
+
+  document.getElementById('gate').hidden = true;
+  document.getElementById('content').hidden = false;
+
+  const visits = await res.json();
+  renderVisits(visits);
+}
+
+// The 4 status tabs, each with its own title/subtitle for the page header.
+const TAB_INFO = {
+  'Pending Sale': { title: 'Pending Sale', sub: 'Items with a claimed buyer, waiting on pickup/payment to finish.' },
+  'Sold - Not Paid': { title: 'Sold — Not Paid', sub: "Sold, but payment hasn't been marked received yet." },
+  'Sold - Paid': { title: 'Sold — Paid', sub: "Payment received, but not yet marked picked up." },
+  'Picked Up': { title: 'Picked Up', sub: 'Fully done — sold, paid, and collected.' },
+  'Available': { title: 'Available', sub: 'Still listed and open to offers.' },
+};
+
+// Which top-level view is showing: 'offers' (the 5 status pills + revenue)
+// or 'visits' (the page-views table). Independent of currentTab, which only
+// tracks which status pill is selected within the offers view.
+let currentView = 'offers';
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.view-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  document.getElementById('statusTabs').hidden = view === 'visits';
+  document.getElementById('groups').hidden = view === 'visits';
+  document.getElementById('totalRevenue').hidden = view === 'visits';
+  document.getElementById('visitsWrap').hidden = view !== 'visits';
+
+  if (view === 'visits') {
+    document.getElementById('pageTitle').textContent = 'Page views';
+    document.getElementById('pageSub').textContent = 'All visits to the public listing page (kept for 90 days).';
+    loadVisits();
+  } else {
+    document.getElementById('pageTitle').textContent = TAB_INFO[currentTab].title;
+    document.getElementById('pageSub').textContent = TAB_INFO[currentTab].sub;
+    if (lastOffers.length) renderGroups(lastOffers);
+    else loadOffers();
+  }
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  document.getElementById('pageTitle').textContent = TAB_INFO[tab].title;
+  document.getElementById('pageSub').textContent = TAB_INFO[tab].sub;
+  if (lastOffers.length) renderGroups(lastOffers);
+  else loadOffers();
+}
+
+function refreshCurrentTab() {
+  if (currentView === 'visits') loadVisits();
+  else loadOffers();
+}
+
+function renderVisits(visits) {
+  const wrap = document.getElementById('visitsWrap');
+  wrap.innerHTML = '';
+
+  if (!visits.length) {
+    wrap.innerHTML = '<div class="empty">No page views logged yet.</div>';
+    return;
+  }
+
+  const cols = [
+    ['date', 'When'],
+    ['ip', 'IP'],
+    ['city', 'City'],
+    ['region', 'Region'],
+    ['country', 'Country'],
+    ['postalCode', 'Postcode'],
+    ['timezone', 'Timezone'],
+    ['latitude', 'Lat'],
+    ['longitude', 'Lng'],
+    ['asOrganization', 'ISP'],
+    ['asn', 'ASN'],
+    ['colo', 'CF Datacenter'],
+    ['httpProtocol', 'HTTP'],
+    ['tlsVersion', 'TLS'],
+    ['clientTcpRtt', 'RTT (ms)'],
+    ['acceptLanguage', 'Language'],
+    ['referrer', 'Referrer'],
+    ['userAgent', 'User Agent'],
+  ];
+
+  const table = document.createElement('table');
+  table.className = 'visits';
+
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>${cols.map(([, label]) => `<th>${escapeHtml(label)}</th>`).join('')}</tr>`;
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  visits.forEach((v) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = cols
+      .map(([key]) => {
+        let val = v[key];
+        if (key === 'date' && val) {
+          val = new Date(val).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' });
+        }
+        return `<td title="${escapeHtml(String(val ?? ''))}">${escapeHtml(String(val ?? ''))}</td>`;
+      })
+      .join('');
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+
+  const container = document.createElement('div');
+  container.className = 'visits-wrap';
+  container.appendChild(table);
+  wrap.appendChild(container);
+}
+
+// Finds the winning offer for an item (if any) and reports whether it's
+// been marked paid. Items with no winner offer (sold with no recorded buyer
+// details, e.g. a straight walk-up sale) count as not-paid by default —
+// there's nothing to mark paid until a winner is recorded.
+function winnerFor(offersForItem) {
+  return offersForItem.find((o) => o.winner);
+}
+function isPaid(offersForItem) {
+  const winner = winnerFor(offersForItem);
+  return !!(winner && winner.paid);
+}
+function isPickedUp(offersForItem) {
+  const winner = winnerFor(offersForItem);
+  return !!(winner && winner.pickedUp);
+}
+
+// Which status tab an item belongs in. Sold items move through 3 tabs as
+// the winner offer's `paid` and `pickedUp` flags get set — picked up wins
+// over not-yet-paid (someone can grab it and pay on the spot, or pay first
+// and collect later; either way, once it's picked up it's fully done and
+// that's the tab that matters). Everything else maps 1:1 to its itemStatus.
+function tabFor(offersForItem) {
+  const status = offersForItem[0].itemStatus || 'Available';
+  if (status !== 'Sold') return status;
+  if (isPickedUp(offersForItem)) return 'Picked Up';
+  return isPaid(offersForItem) ? 'Sold - Paid' : 'Sold - Not Paid';
+}
+
+function renderGroups(offers) {
+  const container = document.getElementById('groups');
+  container.innerHTML = '';
+
+  const byItem = {};
+  offers.forEach((o) => {
+    if (!byItem[o.item]) byItem[o.item] = [];
+    byItem[o.item].push(o);
+  });
+
+  const itemNames = Object.keys(byItem);
+
+  renderTotalRevenue(byItem, itemNames);
+
+  const namesInTab = itemNames
+    .filter((item) => tabFor(byItem[item]) === currentTab)
+    .sort((a, b) => new Date(byItem[b][0].date || 0) - new Date(byItem[a][0].date || 0));
+
+  if (!namesInTab.length) {
+    container.innerHTML = '<div class="empty">Nothing here.</div>';
+    return;
+  }
+
+  namesInTab.forEach((item) => {
+    container.appendChild(renderItemGroup(item, byItem[item]));
+  });
+}
+
+// Pulls the first number out of a price string ("$150 NZD" -> 150,
+// "$150 NZD ($200 w/ cable)" -> 150, "Free" -> 0, "" -> null).
+function parseMoney(str) {
+  if (!str) return null;
+  const match = String(str).replace(/,/g, '').match(/[\d.]+/);
+  return match ? parseFloat(match[0]) : 0;
+}
+
+// Two running totals across every Sold item:
+//   "Money made so far"  - every sold item, paid or not (what's been agreed)
+//   "Money received"     - only the ones marked paid (what's actually banked)
+// Both use the winning offer's amount when recorded, otherwise the item's
+// listed price, minus any shipping cost the seller absorbed.
+function renderTotalRevenue(byItem, itemNames) {
+  const el = document.getElementById('totalRevenue');
+  let totalMade = 0;
+  let totalReceived = 0;
+  let soldCount = 0;
+  let paidCount = 0;
+  let shippingCosts = 0;
+
+  itemNames.forEach((item) => {
+    const offersForItem = byItem[item];
+    if ((offersForItem[0].itemStatus || 'Available') !== 'Sold') return;
+    soldCount += 1;
+
+    const winnerOffer = winnerFor(offersForItem);
+    const hasAmount = winnerOffer && parseMoney(winnerOffer.offerAmount) !== null;
+    const amount = hasAmount ? parseMoney(winnerOffer.offerAmount) : parseMoney(offersForItem[0].listedPrice);
+    const shipping = (winnerOffer && parseMoney(winnerOffer.shippingCost)) || 0;
+
+    totalMade += (amount || 0) - shipping;
+    shippingCosts += shipping;
+    if (isPaid(offersForItem)) {
+      paidCount += 1;
+      totalReceived += (amount || 0) - shipping;
+    }
+  });
+
+  if (!soldCount) {
+    el.innerHTML = '';
+    el.hidden = true;
+    return;
+  }
+
+  const shippingNote = shippingCosts ? ` (after $${shippingCosts.toLocaleString('en-NZ')} courier costs absorbed)` : '';
+  el.innerHTML = `
+    <div>Money made so far: <b>$${totalMade.toLocaleString('en-NZ')} NZD</b><span class="total-note">${soldCount} item${soldCount === 1 ? '' : 's'} sold — uses the agreed offer where recorded, otherwise the listed price${shippingNote}</span></div>
+    <div>Money received: <b>$${totalReceived.toLocaleString('en-NZ')} NZD</b><span class="total-note">${paidCount} of ${soldCount} sold item${soldCount === 1 ? '' : 's'} marked paid</span></div>
+  `;
+  el.hidden = currentView === 'visits';
+}
+
+function renderItemGroup(item, offersForItem) {
+  const group = document.createElement('div');
+  group.className = 'item-group';
+  // Stashed here (rather than inlined into onclick strings) so every button
+  // below can find its item name via this.closest('.item-group').dataset.item
+  // — item names can contain apostrophes (e.g. "Texas Hold'em..."), which
+  // would break a naive onclick="fn('${item}')" string.
+  group.dataset.item = item;
+
+  const header = document.createElement('div');
+  header.className = 'item-header';
+  const listedPrice = offersForItem[0].listedPrice;
+  const winner = winnerFor(offersForItem);
+  const currentStatus = offersForItem[0].itemStatus || 'Available';
+  const isSold = currentStatus === 'Sold';
+  // Only a Sold item with a recorded winner has anything to mark paid/picked
+  // up — a sold item with no winner offer (e.g. a walk-up sale never
+  // logged) has no record to flip.
+  const paidBtn = isSold && winner
+    ? isPaid(offersForItem)
+      ? `<button class="paid-btn unpaid-btn" onclick="markPaid('${winner.key}', false)">Mark as unpaid</button>`
+      : `<button class="paid-btn" onclick="markPaid('${winner.key}', true)">Mark as paid</button>`
+    : '';
+  const pickedUpBtn = isSold && winner
+    ? isPickedUp(offersForItem)
+      ? `<button class="paid-btn unpaid-btn" onclick="markPickedUp('${winner.key}', false)">Mark as not picked up</button>`
+      : `<button class="paid-btn" onclick="markPickedUp('${winner.key}', true)">Mark as picked up</button>`
+    : '';
+  const statusOptions = VALID_ITEM_STATUSES
+    .map((s) => `<option value="${escapeHtml(s)}"${s === currentStatus ? ' selected' : ''}>${escapeHtml(s)}</option>`)
+    .join('');
+  const statusSelect = `<select class="status-select" onchange="setItemStatus(this.closest('.item-group').dataset.item, this.value)">${statusOptions}</select>`;
+  header.innerHTML = `<span>${escapeHtml(item)}${listedPrice ? ` <span class="listed-price">(listed at ${escapeHtml(listedPrice)})</span>` : ''}</span><span style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="item-count">${offersForItem.length} offer${offersForItem.length === 1 ? '' : 's'}</span>${statusSelect}${paidBtn}${pickedUpBtn}</span>`;
+  group.appendChild(header);
+
+  // Once an item is Sold and has a recorded winner, the non-winning offers
+  // are just noise Akki no longer needs at a glance — collapse them behind
+  // a toggle, winner row always stays visible. Items with no winner yet
+  // (e.g. Pending Sale, still deciding) always show every offer.
+  const collapseOthers = isSold && !!winner && offersForItem.length > 1;
+  const otherOffers = collapseOthers ? [] : null;
+
+  offersForItem.forEach((o) => {
+    const row = buildOfferRow(o);
+    if (collapseOthers && !o.winner) {
+      otherOffers.push(row);
+    } else {
+      group.appendChild(row);
+    }
+  });
+
+  if (collapseOthers && otherOffers.length) {
+    const toggle = document.createElement('button');
+    toggle.className = 'paid-btn unpaid-btn';
+    toggle.style.margin = '10px 16px';
+    toggle.textContent = `Show ${otherOffers.length} other offer${otherOffers.length === 1 ? '' : 's'}`;
+    const othersWrap = document.createElement('div');
+    othersWrap.hidden = true;
+    otherOffers.forEach((row) => othersWrap.appendChild(row));
+    toggle.onclick = () => {
+      othersWrap.hidden = !othersWrap.hidden;
+      toggle.textContent = othersWrap.hidden
+        ? `Show ${otherOffers.length} other offer${otherOffers.length === 1 ? '' : 's'}`
+        : 'Hide other offers';
+    };
+    group.appendChild(toggle);
+    group.appendChild(othersWrap);
+  }
+
+  return group;
+}
+
+// Builds a single offer row element — pulled out of renderItemGroup so the
+// collapsed "other offers" section can build rows the same way as the
+// always-visible ones.
+function buildOfferRow(o) {
+  const row = document.createElement('div');
+  row.className = 'offer-row' + (o.winner ? ' winner' : '');
+  const dateStr = o.date ? new Date(o.date).toLocaleString('en-NZ', { dateStyle: 'medium', timeStyle: 'short' }) : '';
+  const badgeClass = o.source === 'Website form' ? 'badge web' : 'badge';
+  // Every non-winning offer gets a "Select as winner" button so Akki can
+  // flip who's buying an item straight from the offer list — the key is
+  // read from data-key rather than inlined into the onclick string, same
+  // reasoning as group.dataset.item above.
+  const selectWinnerBtn = o.winner
+    ? ''
+    : `<button class="paid-btn" data-key="${escapeHtml(o.key)}" onclick="setWinner(this.closest('.item-group').dataset.item, this.dataset.key)">Select as winner</button>`;
+  // Editable amount field — lets Akki correct a typo'd/negotiated offer
+  // amount directly (e.g. after a back-and-forth over text/PM), or add one
+  // to an offer that came in with none. Enter or the Save button both
+  // commit via setOfferAmount(), keyed off this offer's own KV key.
+  const amountEdit = `<span class="amount-edit">
+    <input type="text" class="amount-input" data-key="${escapeHtml(o.key)}" value="${escapeHtml(o.offerAmount || '')}" placeholder="e.g. $50" onkeydown="if(event.key==='Enter'){this.nextElementSibling.click();}">
+    <button class="paid-btn" onclick="setOfferAmount(this.previousElementSibling.dataset.key, this.previousElementSibling.value)">Save</button>
+  </span>${o.listedPrice ? ` <span class="amount-vs-listed">(listed ${escapeHtml(o.listedPrice)})</span>` : ''}`;
+  row.innerHTML = `
+    ${o.winner ? '<span class="winner-badge">✓ Selected</span>' : ''}
+    <span class="name">${escapeHtml(o.name || '(no name)')}</span>
+    ${o.email ? `<span class="meta">${escapeHtml(o.email)}</span>` : ''}
+    ${amountEdit}
+    <span class="${badgeClass}">${escapeHtml(o.source)}</span>
+    <span class="meta">${dateStr}</span>
+    ${selectWinnerBtn}
+    ${o.message ? `<span class="message">${escapeHtml(o.message)}</span>` : ''}
+    ${o.winnerNote ? `<span class="winner-note">${escapeHtml(o.winnerNote)}</span>` : ''}
+  `;
+  return row;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// If a password is already stashed for this browser session, skip the gate.
+if (sessionStorage.getItem(STORAGE_KEY)) {
+  loadOffers();
+}
+</script>
+</body>
+</html>
